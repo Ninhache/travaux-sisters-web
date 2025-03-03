@@ -28,7 +28,7 @@ export default function LoginForm() {
           <input
             type="email"
             placeholder="name@example.com"
-            className="input input-bordered w-full"
+            className="input input-bordered bg-white w-full"
           />
         </div>
 
@@ -48,7 +48,7 @@ export default function LoginForm() {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
-              className="input input-bordered w-full pr-10"
+              className="input input-bordered w-full pr-10 bg-white"
             />
             <button
               type="button"
@@ -76,7 +76,10 @@ export default function LoginForm() {
         <div className="divider">Ou</div>
 
         <div className="form-control">
-          <button className="btn btn-outline w-full">Créer un compte</button>
+          {/* <button className="btn btn-outline w-full">Créer un compte</button> */}
+          <Link href={"/sign-up"} className="btn btn-outline w-full">
+            Créer un compte
+          </Link>
         </div>
       </div>
     </div>
