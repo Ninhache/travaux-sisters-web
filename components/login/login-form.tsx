@@ -61,20 +61,22 @@ export default function LoginForm() {
                 <Eye className="h-4 w-4" />
               )}
               <span className="sr-only">
-                {showPassword ? "Hide password" : "Show password"}
+                {showPassword
+                  ? "Masquer le mot de passe"
+                  : "Afficher le mot de passe"}
               </span>
             </button>
           </div>
         </div>
 
         <div className="form-control mt-4">
-          <button className="btn btn-primary w-full">Login</button>
+          <button className="btn btn-primary w-full">Se connecter</button>
         </div>
 
-        <div className="divider">Or</div>
+        <div className="divider">Ou</div>
 
         <div className="form-control">
-          <button className="btn btn-outline w-full">Create Account</button>
+          <button className="btn btn-outline w-full">Créer un compte</button>
         </div>
       </div>
     </div>
