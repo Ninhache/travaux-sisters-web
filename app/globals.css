@@ -2,7 +2,7 @@
 @plugin "daisyui";
 
 @plugin "daisyui/theme" {
-  name: "traveau sister";
+  name: "traveau-sister";
   default: true;
   prefersdark: true;
   color-scheme: "light";
