@@ -6,11 +6,11 @@ deploy_to_server:
     only:
         - main
     script:
-        # 1. Download the secure files (fetches your `gitlab_ci_deploy_key`).
+      # 1. Download the secure files (fetches your `id_rsa`).
         - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
 
         # 2. Move the private key to a known location and secure permissions.
-        - mv .secure_files/gitlab_ci_deploy_key id_rsa
+        - mv .secure_files/id_rsa id_rsa
         - chmod 600 id_rsa
 
         # 3. SSH into remote server and run the deployment steps there.
