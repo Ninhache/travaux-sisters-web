@@ -14,4 +14,4 @@ deploy_to_server:
     - chmod 600 ssh_deploy_key
 
     # 3 connect in one line
-    - ssh -o "StrictHostKeyChecking=no" o "UserKnownHostsFile=/dev/null" -i ssh_deploy_key startup-week@90.103.29.148 -p 5225 "echo 'SSH connection successful to startup-week!'"
+    - ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ssh_deploy_key startup-week@90.103.29.148 -p 5225 "echo 'SSH connection successful to startup-week!'"
