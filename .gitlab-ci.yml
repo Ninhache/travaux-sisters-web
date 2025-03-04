@@ -13,21 +13,5 @@ deploy_to_server:
     - mv .secure_files/gitlab_ci_deploy_key ssh_deploy_key
     - chmod 600 ssh_deploy_key
 
-    # 3. Create an SSH config so we can easily connect to your remote host.
-    #    - mkdir -p ~/.ssh
-    #    - echo "Host startup-week
-    #      HostName 90.103.29.148
-    #      User startup-week
-    #      Port 5225
-    #      IdentityFile $(pwd)/ssh_deploy_key
-    #      StrictHostKeyChecking no" > ~/.ssh/config
-    #
-    #    # 4. Confirm we can connect (optional).
-    #    - ssh startup-week "echo 'SSH connection successful to startup-week!'"
-
-    #    check if keys exist
-    - ls -la
-    - cat ssh_deploy_key
-
     # 3 connect in one line
-    - ssh -i ssh_deploy_key startup-week@90.103.29.148 -p 5225 "echo 'SSH connection successful to startup-week!'"
+    - ssh -o "StrictHostKeyChecking=no" o "UserKnownHostsFile=/dev/null" -i ssh_deploy_key startup-week@90.103.29.148 -p 5225 "echo 'SSH connection successful to startup-week!'"
