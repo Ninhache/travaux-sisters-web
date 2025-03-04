@@ -13,14 +13,14 @@ import {
 } from "react";
 
 export type User = {
-  mail: "string";
-  username: "string";
-  password: "string";
-  token: "string";
-  phone: "string";
-  adresse: "string";
-  zipCode: "string";
-  city: "string";
+  mail: string;
+  username: string;
+  password: string;
+  token: string;
+  phone: string;
+  adresse: string;
+  zipCode: string;
+  city: string;
 };
 
 interface SessionState {
@@ -33,6 +33,7 @@ interface SessionContextProps extends SessionState {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isConnected: boolean;
+  loading: boolean;
 }
 
 const SessionContext = createContext<SessionContextProps | undefined>(
@@ -43,35 +44,65 @@ interface ProviderProps {
   children: ReactNode;
 }
 
+const LOCAL_STORAGE_KEY = "session";
+
 const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
   const [session, setSessionState] = useState<SessionState>({
     user: null,
     token: null,
   });
   const [isConnected, setIsConnected] = useState(false);
+  const [loading, setLoading] = useState(true); // <-- New loading state
 
   const { user, token } = session;
 
-  const setSession = useCallback((updates: Partial<SessionState>) => {
-    setSessionState((prev) => ({ ...prev, ...updates }));
+  // Load session from localStorage on mount
+  useEffect(() => {
+    const loadSession = async () => {
+      setLoading(true);
+      const storedSession = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (storedSession) {
+        const parsedSession: SessionState = JSON.parse(storedSession);
+        setSessionState(parsedSession);
+        setIsConnected(parsedSession.user !== null);
+      }
+      setLoading(false);
+    };
+
+    loadSession();
   }, []);
 
+  // Update localStorage whenever session changes
   useEffect(() => {
     if (session.user !== null) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(session));
       setIsConnected(true);
+    } else {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      setIsConnected(false);
     }
   }, [session]);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const { token } = await handleLogin({ email, password });
+  const setSession = useCallback((updates: Partial<SessionState>) => {
+    setSessionState((prev) => {
+      const newSession = { ...prev, ...updates };
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newSession));
+      return newSession;
+    });
+  }, []);
 
+  const login = useCallback(async (email: string, password: string) => {
+    setLoading(true);
+    const { token } = await handleLogin({ email, password });
     setSession({ token });
 
     await fetchProfile(token);
+    setLoading(false);
   }, []);
 
   const logout = () => {
     setSession({ user: null, token: null });
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
   };
 
   const fetchProfile = useCallback(
@@ -94,6 +125,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
         login,
         logout,
         isConnected,
+        loading,
       }}
     >
       {children}
