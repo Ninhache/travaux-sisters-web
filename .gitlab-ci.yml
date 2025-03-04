@@ -15,3 +15,8 @@ deploy_to_server:
 
     # 3 connect in one line
     - ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ssh_deploy_key startup-week@90.103.29.148 -p 5225 "echo 'SSH connection successful to startup-week!'"
+    - cd web
+    - git pull https://linventif:$pull_token@gitlab.com/univlille/startupweek/2025/groupe-7/web.git
+    - yarn install
+    - yarn run build
+    - yarn run prod

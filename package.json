@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prod": "pm2 delete startup-week-web || true && pm2 start npm --name startup-week-web -- start"
   },
   "dependencies": {
     "daisyui": "^5.0.0",
