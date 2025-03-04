@@ -1,3 +1,4 @@
+import { SessionContextProvider } from "@/context/session-context";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -27,9 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-          {children}
-        </main>
+        <SessionContextProvider>{children}</SessionContextProvider>
       </body>
     </html>
   );
