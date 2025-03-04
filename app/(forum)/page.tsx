@@ -95,7 +95,6 @@ export default function ForumPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("newest");
 
-  // Filter threads based on selected category and search query
   const filteredThreads = mockThreads.filter((thread) => {
     const matchesCategory =
       selectedCategory === "all" || thread.category === selectedCategory;
@@ -106,12 +105,10 @@ export default function ForumPage() {
     return matchesCategory && matchesSearch;
   });
 
-  // Sort threads
   const sortedThreads = [...filteredThreads].sort((a, b) => {
-    // Then sort by the selected criteria
     switch (sortBy) {
       case "newest":
-        return 0; // In a real app, we'd compare dates
+        return 0;
       case "most-replies":
         return b.replies - a.replies;
       default:
