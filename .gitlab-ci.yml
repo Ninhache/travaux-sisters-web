@@ -25,5 +25,9 @@ deploy_to_server:
     #    # 4. Confirm we can connect (optional).
     #    - ssh startup-week "echo 'SSH connection successful to startup-week!'"
 
+    #    check if keys exist
+    - ls -la
+    - cat ssh_deploy_key
+
     # 3 connect in one line
     - ssh -i ssh_deploy_key startup-week@90.103.29.148 -p 5225 "echo 'SSH connection successful to startup-week!'"
