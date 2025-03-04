@@ -126,8 +126,8 @@ export default function ForumPage() {
           <div className="lg:w-1/4">
             <CategoryFilter
               categories={categories}
-              selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
+              // selectedCategory={selectedCategory}
+              // onSelectCategory={setSelectedCategory}
             />
           </div>
 
