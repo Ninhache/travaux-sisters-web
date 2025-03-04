@@ -1,1 +1,6 @@
-export const API_BASEURL = "http://localhost:8080/api";
+const devAPI = "http://localhost:8080/api";
+const prodAPI = "https://travaux-sisters.linv.dev/api";
+
+export function getAPIBaseURL() {
+  return process.env.NODE_ENV === "development" ? devAPI : prodAPI;
+}
