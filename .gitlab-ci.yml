@@ -1,0 +1,29 @@
+stages:
+  - deploy
+
+deploy_to_server:
+  stage: deploy
+  only:
+    - main
+  script:
+    # 1. Download the secure files (fetches your `gitlab_ci_deploy_key`).
+    - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
+
+    # 2. Move the private key to a known location and secure permissions.
+    - mv .secure_files/gitlab_ci_deploy_key ssh_deploy_key
+    - chmod 600 ssh_deploy_key
+
+    # 3. Create an SSH config so we can easily connect to your remote host.
+    - mkdir -p ~/.ssh
+    - echo "Host startup-week
+      HostName 90.103.29.148
+      User startup-week
+      Port 5225
+      IdentityFile $(pwd)/ssh_deploy_key
+      StrictHostKeyChecking no" > ~/.ssh/config
+
+    # 4. Confirm we can connect (optional).
+    - ssh startup-week "echo 'SSH connection successful to startup-week!'"
+
+    # 5. Go to the `web` directory on the server and do a git pull.
+    #- ssh startup-week "cd web && git pull"
