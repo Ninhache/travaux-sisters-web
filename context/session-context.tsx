@@ -1,32 +1,38 @@
 "use client";
 
-import { mockLogin, mockRefreshToken } from "@/service/connection";
-import { Maybe } from "@/types/util"; // Or wherever your 'Maybe' type is defined
+import { handleLogin } from "@/service/api/connection";
+import { handleProfile } from "@/service/api/profile";
+import { Maybe } from "@/types/util";
 import {
   createContext,
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
 export type User = {
-  name: string;
-  email: string;
-  phone: string;
-  adress: string;
+  mail: "string";
+  username: "string";
+  password: "string";
+  token: "string";
+  phone: "string";
+  adresse: "string";
+  zipCode: "string";
+  city: "string";
 };
 
 interface SessionState {
   user: Maybe<User>;
-  appToken: Maybe<string>;
-  refreshToken: Maybe<string>;
+  token: Maybe<string>;
 }
 
 interface SessionContextProps extends SessionState {
   setSession: (updates: Partial<SessionState>) => void;
   login: (email: string, password: string) => Promise<void>;
-  refresh: () => Promise<void>;
+  logout: () => void;
+  isConnected: boolean;
 }
 
 const SessionContext = createContext<SessionContextProps | undefined>(
@@ -40,31 +46,45 @@ interface ProviderProps {
 const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
   const [session, setSessionState] = useState<SessionState>({
     user: null,
-    appToken: null,
-    refreshToken: null,
+    token: null,
   });
+  const [isConnected, setIsConnected] = useState(false);
+
+  const { user, token } = session;
 
   const setSession = useCallback((updates: Partial<SessionState>) => {
     setSessionState((prev) => ({ ...prev, ...updates }));
   }, []);
 
-  // Mock login that fetches tokens and user data from a service
+  useEffect(() => {
+    if (session.user !== null) {
+      setIsConnected(true);
+    }
+  }, [session]);
+
   const login = useCallback(async (email: string, password: string) => {
-    const { appToken, refreshToken, user } = await mockLogin({
-      email,
-      password,
-    });
-    setSessionState({ user, appToken, refreshToken });
+    const { token } = await handleLogin({ email, password });
+
+    setSession({ token });
+
+    await fetchProfile(token);
   }, []);
 
-  // Example "refresh" flow: uses the refreshToken to get a new appToken
-  const refresh = useCallback(async () => {
-    if (!session.refreshToken) {
-      throw new Error("No refresh token available");
-    }
-    const { appToken } = await mockRefreshToken(session.refreshToken);
-    setSessionState((prev) => ({ ...prev, appToken }));
-  }, [session.refreshToken]);
+  const logout = () => {
+    setSession({ user: null, token: null });
+  };
+
+  const fetchProfile = useCallback(
+    async (passedToken?: string) => {
+      const authToken = passedToken ?? token;
+      if (!authToken)
+        throw Error("Token is not defined, ensure you're logged in");
+
+      const user = await handleProfile({ token: authToken });
+      setSession({ user });
+    },
+    [token, user]
+  );
 
   return (
     <SessionContext.Provider
@@ -72,7 +92,8 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
         ...session,
         setSession,
         login,
-        refresh,
+        logout,
+        isConnected,
       }}
     >
       {children}
