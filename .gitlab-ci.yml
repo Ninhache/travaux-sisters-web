@@ -18,6 +18,7 @@ deploy_to_server:
           echo "SSH connection successful to startup-week!"
           cd web
           git pull
-          yarn install
-          yarn build
+          npm install
+          npm run build
+          npm run start
           EOF
