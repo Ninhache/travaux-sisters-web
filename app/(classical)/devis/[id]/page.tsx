@@ -1,5 +1,7 @@
 "use client";
 
+import PDFGlossary from "@/components/devis/pdf/PDFGlossary";
+import PDFReader from "@/components/devis/pdf/PDFReader";
 import { useSession } from "@/context/session-context";
 import { getDevisById } from "@/lib/api/devis";
 import { ArrowLeft, Download, FileText, Link } from "lucide-react";
@@ -37,7 +39,7 @@ export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
     fetchDevis();
   }, [params]);
 
-  if (loading) {
+  if (loading || !devis) {
     return (
       <main className="bg-base-200 flex w-1/2 items-center justify-center p-4 md:p-8">
         <p className="text-lg font-semibold">Chargement...</p>
@@ -78,10 +80,10 @@ export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
             </div>
 
             <div className="bg-base-300 flex min-h-[500px] w-full items-center justify-center rounded-lg">
-              <iframe
-                src={`http://localhost:8080/api/devis/${devis?.id}?token=user`}
-                className="h-[500px] w-full"
-              />
+              <PDFReader id={String(devis.id)}/>
+            </div>
+            <div>
+              <PDFGlossary id={String(devis.id)}/>
             </div>
           </div>
         </div>

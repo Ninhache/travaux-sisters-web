@@ -1,7 +1,8 @@
 "use client";
 
 import { useSession } from "@/context/session-context";
-import { Devis, getDevis, uploadDevis } from "@/lib/api/devis";
+import { getDevis, uploadDevis } from "@/lib/api/devis";
+import { Devis } from "@/types/devis";
 import {
   CheckCircleIcon,
   EyeIcon,
