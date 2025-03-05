@@ -36,7 +36,7 @@ interface SessionContextProps extends SessionState {
 }
 
 const SessionContext = createContext<SessionContextProps | undefined>(
-  undefined
+  undefined,
 );
 
 interface ProviderProps {
@@ -51,7 +51,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
     token: null,
   });
   const [isConnected, setIsConnected] = useState(false);
-  const [loading, setLoading] = useState(true); // <-- New loading state
+  const [loading, setLoading] = useState(true);
 
   const { user, token } = session;
 
@@ -59,13 +59,21 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
   useEffect(() => {
     const loadSession = async () => {
       setLoading(true);
-      const storedSession = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (storedSession) {
-        const parsedSession: SessionState = JSON.parse(storedSession);
-        setSessionState(parsedSession);
-        setIsConnected(parsedSession.user !== null);
+      try {
+        const storedSession = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (storedSession) {
+          const parsedSession: SessionState = JSON.parse(storedSession);
+          setSessionState(parsedSession);
+          setIsConnected(!!parsedSession.user);
+          if (parsedSession.token) {
+            await fetchProfile(parsedSession.token);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading session:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     loadSession();
@@ -73,7 +81,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
 
   // Update localStorage whenever session changes
   useEffect(() => {
-    if (session.user !== null) {
+    if (session.user) {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(session));
       setIsConnected(true);
     } else {
@@ -92,28 +100,44 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
 
   const login = useCallback(async (email: string, password: string) => {
     setLoading(true);
-    const { token } = await handleLogin({ email, password });
-    setSession({ token });
+    try {
+      const { token } = await handleLogin({ email, password });
+      setSession({ token });
 
-    await fetchProfile(token);
-    setLoading(false);
+      await fetchProfile(token);
+    } catch (error) {
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const logout = () => {
     setSession({ user: null, token: null });
     localStorage.removeItem(LOCAL_STORAGE_KEY);
+    setIsConnected(false);
+    setLoading(false);
   };
 
   const fetchProfile = useCallback(
     async (passedToken?: string) => {
       const authToken = passedToken ?? token;
-      if (!authToken)
-        throw Error("Token is not defined, ensure you're logged in");
+      if (!authToken) {
+        console.warn("fetchProfile: No token available.");
+        return;
+      }
 
-      const user = await handleProfile({ token: authToken });
-      setSession({ user });
+      setLoading(true);
+      try {
+        const user = await handleProfile({ token: authToken });
+        setSession({ user });
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
+      }
     },
-    [token, user]
+    [token],
   );
 
   return (

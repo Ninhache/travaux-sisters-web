@@ -51,10 +51,10 @@ export default function FileUploadSection() {
         return;
       }
 
-      if (selectedFile.size > 2 * 1024 * 1024) {
+      if (selectedFile.size > 5 * 1024 * 1024) {
         setUploadStatus({
           type: "error",
-          message: "File size exceeds 2MB limit",
+          message: "File size exceeds 5MB limit",
         });
         return;
       }
@@ -138,7 +138,7 @@ export default function FileUploadSection() {
           />
           <label className="label">
             <span className="label-text-alt text-base-content/70">
-              Taille maximale: 2MB
+              Taille maximale: 5MB
             </span>
           </label>
         </div>

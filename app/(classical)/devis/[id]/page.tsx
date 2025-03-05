@@ -1,24 +1,49 @@
-// const getFileById = (id: string) => {
-//   return {
-//     id,
-//     name: id === "1" ? "DEVIS-BATIMENT-FCV-1-1.pdf" : "blank.pdf",
-//     size: id === "1" ? "2.2 MB" : "0.2 MB",
-//     uploadedAt: id === "1" ? "2025-03-05" : "2025-03-05",
-//     url: "#",
-//   };
-// };
+"use client";
 
+import { useSession } from "@/context/session-context";
+import { getDevisById } from "@/lib/api/devis";
 import { ArrowLeft, Download, FileText, Link } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export type ParamsProps<P = Record<string, unknown>> = {
   params: Promise<P>;
 };
 
-export default async function FileViewPage({
-  params,
-}: ParamsProps<{ id: string }>) {
-  // const file = getFileById(params.id);
-  const { id } = await params;
+export type Devis = {
+  id: number;
+  filename: string;
+  owner: string;
+};
+
+export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
+  const [devis, setDevis] = useState<Devis | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const { token } = useSession();
+
+  useEffect(() => {
+    async function fetchDevis() {
+      try {
+        const { id } = await params;
+        // @ts-ignore
+        const data = await getDevisById(id, token);
+        setDevis(data);
+      } catch (error) {
+        console.error("Error fetching devis:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDevis();
+  }, [params]);
+
+  if (loading) {
+    return (
+      <main className="bg-base-200 flex w-1/2 items-center justify-center p-4 md:p-8">
+        <p className="text-lg font-semibold">Chargement...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="bg-base-200 w-1/2 p-4 md:p-8">
@@ -30,7 +55,7 @@ export default async function FileViewPage({
                 <ArrowLeft className="h-5 w-5" />
               </Link>
               <h1 className="card-title text-2xl font-bold">
-                Details document
+                Détails du document
               </h1>
             </div>
 
@@ -39,10 +64,10 @@ export default async function FileViewPage({
                 <div className="flex items-center gap-3">
                   <FileText className="text-primary h-8 w-8" />
                   <div>
-                    {/* <h2 className="text-xl font-semibold">{file.name}</h2>
-                      <p className="text-base-content/70">
-                        Enregistré le {file.uploadedAt} • {file.size}
-                      </p> */}
+                    <h2 className="text-xl font-semibold">{devis?.filename}</h2>
+                    <p className="text-base-content/70">
+                      Propriétaire: {devis?.owner}
+                    </p>
                   </div>
                 </div>
                 <button className="btn btn-primary">
@@ -54,7 +79,7 @@ export default async function FileViewPage({
 
             <div className="bg-base-300 flex min-h-[500px] w-full items-center justify-center rounded-lg">
               <iframe
-                src={`http://localhost:8080/api/devis/${id}?token=user`}
+                src={`http://localhost:8080/api/devis/${devis?.id}?token=user`}
                 className="h-[500px] w-full"
               />
             </div>

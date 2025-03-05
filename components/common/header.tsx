@@ -11,6 +11,7 @@ type NavItem = {
   path: string;
   label: string;
   badge?: string;
+  needConnected: boolean;
 };
 
 type NavbarConfig = {
@@ -19,38 +20,38 @@ type NavbarConfig = {
 
 const defaultNavConfig: NavbarConfig = {
   links: [
-    { path: "/forum", label: "Forum" },
-    { path: "/devis", label: "Devis" },
+    { path: "/forum", label: "Forum", needConnected: false },
+    { path: "/devis", label: "Devis", needConnected: true },
   ],
 };
 
 const ConnectedRightPart = () => {
-  const { logout } = useSession();
+  const { logout, isConnected } = useSession();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 bg-base-200 hover:bg-base-300 transition-colors px-3 py-2 rounded-lg"
+          className="bg-base-200 hover:bg-base-300 flex items-center gap-2 rounded-lg px-3 py-2 transition-colors"
         >
-          <div className="w-8 h-8 rounded-full overflow-hidden">
+          <div className="h-8 w-8 overflow-hidden rounded-full">
             <img
               alt="User Avatar"
               src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
             />
           </div>
-          <span className="hidden md:inline font-medium">Mon compte</span>
+          <span className="hidden font-medium md:inline">Mon compte</span>
           <ChevronDown size={16} />
         </button>
 
         {isOpen && (
-          <div className="absolute right-0 mt-2 w-56 bg-base-100 rounded-lg shadow-lg py-2 z-50">
-            <div className="px-4 py-2 border-b border-base-200">
+          <div className="bg-base-100 absolute right-0 z-50 mt-2 w-56 rounded-lg py-2 shadow-lg">
+            <div className="border-base-200 border-b px-4 py-2">
               <p className="text-sm font-medium">Mon profil</p>
-              <p className="text-xs text-base-content/70 truncate">
+              <p className="text-base-content/70 truncate text-xs">
                 user@example.com
               </p>
             </div>
@@ -58,11 +59,11 @@ const ConnectedRightPart = () => {
               <li>
                 <Link
                   href="/profile"
-                  className="flex items-center gap-2 px-4 py-2 hover:bg-base-200 transition-colors"
+                  className="hover:bg-base-200 flex items-center gap-2 px-4 py-2 transition-colors"
                 >
                   <User size={16} />
                   <span>Profile</span>
-                  <span className="ml-auto badge badge-sm badge-primary">
+                  <span className="badge badge-sm badge-primary ml-auto">
                     New
                   </span>
                 </Link>
@@ -70,16 +71,16 @@ const ConnectedRightPart = () => {
               <li>
                 <Link
                   href="/settings"
-                  className="flex items-center gap-2 px-4 py-2 hover:bg-base-200 transition-colors"
+                  className="hover:bg-base-200 flex items-center gap-2 px-4 py-2 transition-colors"
                 >
                   <Settings size={16} />
                   <span>Settings</span>
                 </Link>
               </li>
-              <li className="border-t border-base-200 mt-1">
+              <li className="border-base-200 mt-1 border-t">
                 <button
                   onClick={logout}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-error hover:bg-base-200 transition-colors"
+                  className="text-error hover:bg-base-200 flex w-full items-center gap-2 px-4 py-2 transition-colors"
                 >
                   <LogOut size={16} />
                   <span>Logout</span>
@@ -115,10 +116,10 @@ export default function Header({ navConfig = defaultNavConfig }: HeaderProps) {
   }, []); // Removed unnecessary pathname dependency
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-base-100 shadow-sm">
+    <header className="bg-base-100 sticky top-0 z-30 w-full shadow-sm">
       <div className="container mx-auto px-4">
         <div className="navbar h-16 px-0">
-          <div className="flex-1 flex items-center">
+          <div className="flex flex-1 items-center">
             <Link href={"/"} className="flex items-center">
               <Image
                 src={"/travaux-sisters-logo.png"}
@@ -130,28 +131,40 @@ export default function Header({ navConfig = defaultNavConfig }: HeaderProps) {
             </Link>
 
             {/* Divider */}
-            <div className="hidden md:block mx-4 h-6 border-r border-base-300"></div>
+            <div className="border-base-300 mx-4 hidden h-6 border-r md:block"></div>
 
             {/* Desktop Navigation Links */}
             <div className="hidden md:flex">
               <ul className="flex space-x-1">
                 {navConfig.links.map((link) => (
                   <li key={link.path}>
-                    <Link
-                      href={link.path}
-                      className={`px-3 py-2 rounded-md font-medium text-sm transition-colors ${
-                        pathname === link.path
-                          ? "bg-primary/10 text-primary"
-                          : "hover:bg-base-200"
-                      }`}
-                    >
-                      {link.label}
-                      {link.badge && (
-                        <span className="ml-2 badge badge-sm badge-primary">
-                          {link.badge}
+                    {(link.needConnected && isConnected) ||
+                    !link.needConnected ? (
+                      <Link
+                        href={link.path}
+                        className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                          pathname === link.path
+                            ? "bg-primary/10 text-primary"
+                            : "hover:bg-base-200"
+                        }`}
+                      >
+                        {link.label}
+                        {link.badge && (
+                          <span className="badge badge-sm badge-primary ml-2">
+                            {link.badge}
+                          </span>
+                        )}
+                      </Link>
+                    ) : (
+                      <div
+                        className="tooltip tooltip-bottom"
+                        data-tip="You need to be connected to access this link"
+                      >
+                        <span className="text-primary/25 cursor-not-allowed rounded-md px-3 py-2 text-sm font-medium">
+                          {link.label}
                         </span>
-                      )}
-                    </Link>
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -159,13 +172,13 @@ export default function Header({ navConfig = defaultNavConfig }: HeaderProps) {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden mr-2">
+          <div className="mr-2 md:hidden">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setMobileMenuOpen(!mobileMenuOpen);
               }}
-              className="p-2 rounded-md hover:bg-base-200"
+              className="hover:bg-base-200 rounded-md p-2"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -174,7 +187,7 @@ export default function Header({ navConfig = defaultNavConfig }: HeaderProps) {
           {/* Auth section */}
           <div className="flex items-center">
             {loading ? (
-              <div className="flex items-center justify-center w-8 h-8">
+              <div className="flex h-8 w-8 items-center justify-center">
                 <span className="loading loading-spinner loading-sm"></span>
               </div>
             ) : isConnected ? (
@@ -193,14 +206,14 @@ export default function Header({ navConfig = defaultNavConfig }: HeaderProps) {
 
       {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-base-100 border-t border-base-200 shadow-lg">
+        <div className="bg-base-100 border-base-200 border-t shadow-lg md:hidden">
           <div className="container mx-auto px-4 py-3">
             <ul className="space-y-2">
               {navConfig.links.map((link) => (
                 <li key={link.path}>
                   <Link
                     href={link.path}
-                    className={`block px-3 py-2 rounded-md ${
+                    className={`block rounded-md px-3 py-2 ${
                       pathname === link.path
                         ? "bg-primary/10 text-primary"
                         : "hover:bg-base-200"
@@ -208,7 +221,7 @@ export default function Header({ navConfig = defaultNavConfig }: HeaderProps) {
                   >
                     {link.label}
                     {link.badge && (
-                      <span className="ml-2 badge badge-sm badge-primary">
+                      <span className="badge badge-sm badge-primary ml-2">
                         {link.badge}
                       </span>
                     )}
