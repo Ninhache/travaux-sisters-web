@@ -1,7 +1,6 @@
 "use client";
-
-import { handleLogin } from "@/service/api/connection";
-import { handleProfile } from "@/service/api/profile";
+import { handleLogin } from "@/lib/api/connection";
+import { handleProfile } from "@/lib/api/profile";
 import { Maybe } from "@/types/util";
 import {
   createContext,

@@ -1,8 +1,7 @@
-import { SessionContextProvider } from "@/context/session-context";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { HtmlElement } from "@/components/base/html-element";
+import type { FunctionComponent, PropsWithChildren } from "react";
+import "@/app/globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,15 +17,16 @@ export const metadata: Metadata = {
   title: "Travaux Sisters !",
   description: "Travaux Sisters WIP!",
 };
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+const HtmlElement: FunctionComponent<PropsWithChildren> = ({ children }) => {
   return (
-    <HtmlElement>
-      <SessionContextProvider>{children}</SessionContextProvider>
-    </HtmlElement>
+    <html lang="fr">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        {children}
+      </body>
+    </html>
   );
-}
+};
+
+export { HtmlElement };
