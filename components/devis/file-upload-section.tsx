@@ -183,7 +183,7 @@ export default function FileUploadSection() {
           onClick={handleUpload}
           disabled={!file || uploading}
         >
-          {!uploading && <UploadIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />}
+          {/* {!uploading && <UploadIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />} */}
           <span className="text-sm sm:text-base">
             {uploading ? "Enregistrement..." : "Enregistrer votre document"}
           </span>
@@ -205,7 +205,6 @@ export default function FileUploadSection() {
           </div>
         ) : (
           <div className="-mx-3 overflow-x-auto sm:mx-0">
-            {/* Mobile view - card layout */}
             <div className="grid gap-4 sm:hidden">
               {uploadedFiles.map((file) => (
                 <div key={file.id} className="card bg-base-200 shadow-sm">
@@ -236,7 +235,6 @@ export default function FileUploadSection() {
               ))}
             </div>
 
-            {/* Desktop view - table layout */}
             <table className="table-zebra hidden table w-full sm:table">
               <thead>
                 <tr>
