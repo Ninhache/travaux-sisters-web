@@ -19,7 +19,8 @@ deploy_to_server:
               -i id_rsa startup-week@90.103.29.148 -p 5225 << 'EOF'
           echo "SSH connection successful to startup-week!"
           cd web
-          git pull
+          git fetch origin main
+          git reset --hard origin/main
           npm install
           npm run build
           npm run prod
