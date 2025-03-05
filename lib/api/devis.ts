@@ -34,6 +34,21 @@ export async function getDevisById(id: string, token: string): Promise<Devis> {
   return response.json() as Promise<Devis>;
 }
 
+export async function deleteDevisById(id: number, token: string) {
+  const response = await fetch(`${getAPIBaseURL()}/devis/${id}`, {
+    method: "delete",
+    headers: {
+      Authorization: `${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch devis");
+  }
+
+  return true;
+}
+
 export async function uploadDevis(file: File, token: string): Promise<Devis> {
   const formData = new FormData();
   formData.append("devis", file);

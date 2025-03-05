@@ -51,11 +51,11 @@ export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
     if (!loading) {
       fetchDevis();
     }
-  }, [params, token, loading, router]);
+  }, [params, token, loading]); // Removed router from dependencies
 
   if (loading || isLoading) {
     return (
-      <main className="bg-base-200 flex w-1/2 items-center justify-center p-4 md:p-8">
+      <main className="bg-base-200 flex w-full items-center justify-center p-4">
         <p className="text-lg font-semibold">Chargement...</p>
       </main>
     );
@@ -63,8 +63,8 @@ export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
 
   if (error) {
     return (
-      <main className="bg-base-200 flex w-1/2 items-center justify-center p-4 md:p-8">
-        <div className="card bg-base-100 shadow-xl">
+      <main className="bg-base-200 flex w-full items-center justify-center p-4">
+        <div className="card bg-base-100 w-full max-w-md shadow-xl">
           <div className="card-body">
             <h2 className="card-title text-error">Erreur</h2>
             <p>{error.message}</p>
@@ -80,39 +80,47 @@ export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
   }
 
   return (
-    <main className="bg-base-200 w-1/2 p-4 md:p-8">
+    <main className="bg-base-200 w-full p-4">
       <div className="container mx-auto max-w-4xl">
         <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <div className="mb-6 flex items-center gap-4">
-              <Link href="/devis" className="btn btn-circle btn-ghost">
+          <div className="card-body p-4 sm:p-6">
+            <div className="mb-4 flex flex-col gap-2 sm:mb-6 sm:flex-row sm:items-center sm:gap-4">
+              <Link
+                href="/devis"
+                className="btn btn-circle btn-ghost self-start"
+              >
                 <ArrowLeft className="h-5 w-5" />
               </Link>
-              <h1 className="card-title text-2xl font-bold">
+              <h1 className="card-title text-xl font-bold sm:text-2xl">
                 Détails du document
               </h1>
             </div>
 
-            <div className="bg-base-200 mb-6 rounded-lg p-6">
-              <div className="mb-4 flex items-center justify-between">
+            <div className="bg-base-200 mb-4 rounded-lg p-3 sm:mb-6 sm:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
-                  <FileText className="text-primary h-8 w-8" />
-                  <div>
-                    <h2 className="text-xl font-semibold">{devis?.filename}</h2>
-                    <p className="text-base-content/70">
+                  <FileText className="text-primary h-6 w-6 flex-shrink-0 sm:h-8 sm:w-8" />
+                  <div className="max-w-full sm:max-w-xs">
+                    <h2 className="truncate text-lg font-semibold sm:text-xl">
+                      {devis?.filename}
+                    </h2>
+                    <p className="text-base-content/70 text-sm sm:text-base">
                       Propriétaire: {devis?.owner}
                     </p>
                   </div>
                 </div>
-                <button className="btn btn-primary">
-                  <Download className="mr-2 h-5 w-5" />
+
+                <button className="btn btn-primary mt-2 w-full sm:mt-0 sm:w-auto">
+                  <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Télécharger
                 </button>
               </div>
             </div>
 
-            <div className="bg-base-300 flex min-h-[500px] w-full items-center justify-center rounded-lg">
-              Faut imaginer le PDF . . .
+            <div className="bg-base-300 flex min-h-[300px] w-full items-center justify-center rounded-lg sm:min-h-[500px]">
+              <p className="text-base-content/70 p-4 text-center">
+                Faut imaginer le PDF . . .
+              </p>
             </div>
           </div>
         </div>
