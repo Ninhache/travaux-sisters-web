@@ -1,13 +1,13 @@
 import {
-  AllCategoryNames,
   CategoryNames,
-  SubcategoryNames,
+  CategorySlugs,
+  SubcategorySlugs,
 } from "@/lib/mock-data";
 
-export interface Category {
+export interface tCategory {
   name: CategoryNames;
-  slug: string;
-  subcategories: Subcategory[];
+  slug: CategorySlugs;
+  subcategories: readonly Subcategory[];
 }
 
 export interface Subcategory {
@@ -20,8 +20,8 @@ export interface Thread {
   title: string;
   author: string;
   date: string;
-  category: CategoryNames;
-  subcategory: SubcategoryNames;
+  category: CategorySlugs;
+  subcategory: SubcategorySlugs;
   replies: number;
   text: string;
 }
@@ -34,3 +34,5 @@ export interface ThreadComment {
   text: string;
   likes: number;
 }
+
+export type Category = never;

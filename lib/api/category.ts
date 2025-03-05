@@ -1,17 +1,15 @@
-import {getAPIBaseURL} from "@/config/url";
+import { getAPIBaseURL } from "@/config/url";
+import { tCategory } from "@/types/forum";
 
-type Category = string;
 
-export async function getCategories(): Promise<Category[]> {
-  const response = await fetch(`${getAPIBaseURL()}}/categorie`);
+export async function getCategories(): Promise<tCategory[]> {
+  const response = await fetch(`${getAPIBaseURL()}/categorie`);
 
   if (!response.ok) {
-    throw new Error("Invalid credentials");
+    throw new Error("Failed to fetch categories");
   }
 
   const data = await response.json();
 
-  return {
-    ...data,
-  };
+  return data as tCategory[];
 }

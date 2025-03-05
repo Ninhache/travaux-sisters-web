@@ -10,7 +10,7 @@ export type ProfileResponse = User;
 export async function handleProfile({
   token,
 }: ProfileParams): Promise<ProfileResponse> {
-  const response = await fetch(`${getAPIBaseURL()}}/user?token=${token}`);
+  const response = await fetch(`${getAPIBaseURL()}/user?token=${token}`);
 
   if (!response.ok) {
     throw new Error("Invalid token");

@@ -1,4 +1,4 @@
-import type { Category, Thread } from "@/types/forum";
+import type { Thread } from "@/types/forum";
 
 export const mockCategories = [
   {
@@ -26,11 +26,16 @@ export const mockCategories = [
     ],
   },
 ] as const;
-export type CategoryNames = (typeof mockCategories)[number]["slug"];
+
+export type CategoryNames = (typeof mockCategories)[number]["name"];
 export type SubcategoryNames =
+  (typeof mockCategories)[number]["subcategories"][number]["name"];
+
+export type CategorySlugs = (typeof mockCategories)[number]["slug"];
+export type SubcategorySlugs =
   (typeof mockCategories)[number]["subcategories"][number]["slug"];
 
-export type AllCategoryNames = CategoryNames | SubcategoryNames;
+export type AllCategorySlugs = CategorySlugs | SubcategorySlugs;
 
 export const mockThreads: Thread[] = [
   {

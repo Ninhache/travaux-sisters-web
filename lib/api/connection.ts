@@ -13,7 +13,7 @@ export async function handleLogin({
   email,
   password,
 }: LoginParams): Promise<LoginResponse> {
-  const response = await fetch(`${getAPIBaseURL()}}/connect`, {
+  const response = await fetch(`${getAPIBaseURL()}/connect`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

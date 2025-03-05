@@ -2,19 +2,18 @@
 
 import type React from "react";
 
-import type { Category } from "@/types/forum";
+import { tCategory } from "@/types/forum";
 import { Folder, Hash, HelpCircle, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 interface CategoryMenuProps {
-  categories: Category[];
+  categories: readonly tCategory[];
 }
 
 export default function CategoryMenu({ categories }: CategoryMenuProps) {
   const pathname = usePathname();
 
-  // Map of category icons (you can expand this as needed)
   const categoryIcons: { [key: string]: React.ReactNode } = {
     "general-discussion": <MessageSquare className="h-4 w-4" />,
     support: <HelpCircle className="h-4 w-4" />,
@@ -23,8 +22,8 @@ export default function CategoryMenu({ categories }: CategoryMenuProps) {
 
   return (
     <div className="bg-base-100 rounded-box p-4 shadow-sm">
-      <h2 className="text-lg font-semibold mb-4">Categories</h2>
-      <ul className="menu bg-base-100 w-full rounded-box">
+      <h2 className="mb-4 text-lg font-semibold">Categories</h2>
+      <ul className="menu bg-base-100 rounded-box w-full">
         <li>
           <Link href="/forum" className={pathname === "/forum" ? "active" : ""}>
             <Hash className="h-4 w-4" />

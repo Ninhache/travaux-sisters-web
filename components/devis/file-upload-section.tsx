@@ -1,24 +1,17 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useSession } from "@/context/session-context";
+import { Devis, getDevis, uploadDevis } from "@/lib/api/devis";
 import {
+  CheckCircleIcon,
+  EyeIcon,
   FileIcon,
   UploadIcon,
-  CheckCircleIcon,
   XCircleIcon,
-  EyeIcon,
 } from "lucide-react";
-
-type UploadedFile = {
-  id: string;
-  name: string;
-  size: string;
-  uploadedAt: string;
-};
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function FileUploadSection() {
   const router = useRouter();
@@ -28,27 +21,28 @@ export default function FileUploadSection() {
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([
-    // Sample data - replace with actual data from your API
-    {
-      id: "1",
-      name: "invoice-2023.pdf",
-      size: "1.2 MB",
-      uploadedAt: "2023-10-15",
-    },
-    {
-      id: "2",
-      name: "quote-project-a.pdf",
-      size: "0.8 MB",
-      uploadedAt: "2023-10-10",
-    },
-  ]);
+  const [uploadedFiles, setUploadedFiles] = useState<Devis[]>([]);
+
+  const { token } = useSession();
+
+  useEffect(() => {
+    async function fetchDevis() {
+      try {
+        // @ts-ignore
+        const devisList = await getDevis(token);
+        setUploadedFiles(devisList);
+      } catch (error) {
+        console.error("Error fetching devis:", error);
+      }
+    }
+
+    fetchDevis();
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
 
-      // Check if file is PDF
       if (selectedFile.type !== "application/pdf") {
         setUploadStatus({
           type: "error",
@@ -57,7 +51,6 @@ export default function FileUploadSection() {
         return;
       }
 
-      // Check file size (2MB = 2 * 1024 * 1024 bytes)
       if (selectedFile.size > 2 * 1024 * 1024) {
         setUploadStatus({
           type: "error",
@@ -71,12 +64,9 @@ export default function FileUploadSection() {
     }
   };
 
-  const handleUpload = async () => {
+  const handleUpload = useCallback(async () => {
     if (!file) {
-      setUploadStatus({
-        type: "error",
-        message: "Please select a file first",
-      });
+      setUploadStatus({ type: "error", message: "Please select a file first" });
       return;
     }
 
@@ -84,41 +74,18 @@ export default function FileUploadSection() {
     setUploadStatus({ type: null, message: "" });
 
     try {
-      // Create FormData
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // This is where you would send the file to your server
-      // Replace with your actual API endpoint
-      // const response = await fetch('/api/upload', {
-      //   method: 'POST',
-      //   body: formData,
-      // });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // if (!response.ok) throw new Error('Upload failed');
-      // const data = await response.json();
-
-      // Simulate successful upload
-      const newFile: UploadedFile = {
-        id: Date.now().toString(),
-        name: file.name,
-        size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-        uploadedAt: new Date().toISOString().split("T")[0],
-      };
-
-      setUploadedFiles((prev) => [newFile, ...prev]);
+      // @ts-ignore
+      const newDevis = await uploadDevis(file, token);
+      // const  newDevis = await uploadDevis(file);
+      setUploadedFiles((prev) => [newDevis, ...prev]);
       setFile(null);
       setUploadStatus({
         type: "success",
         message: "Fichier ajouté avec succès!",
       });
 
-      // Reset file input
       const fileInput = document.getElementById(
-        "file-upload"
+        "file-upload",
       ) as HTMLInputElement;
       if (fileInput) fileInput.value = "";
     } catch (error) {
@@ -130,29 +97,26 @@ export default function FileUploadSection() {
     } finally {
       setUploading(false);
     }
-  };
+  }, [token, file]);
 
-  const viewFile = (id: string) => {
+  const viewFile = (id: number) => {
     router.push(`/devis/${id}`);
   };
 
   return (
     <div className="space-y-8">
-      {/* File Upload Section */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Ajouter un devis !</h2>
 
         {uploadStatus.type && (
           <div
-            className={`alert ${
-              uploadStatus.type === "success" ? "alert-success" : "alert-error"
-            }`}
+            className={`alert ${uploadStatus.type === "success" ? "alert-success" : "alert-error"}`}
           >
             <div className="flex items-center">
               {uploadStatus.type === "success" ? (
-                <CheckCircleIcon className="h-5 w-5 mr-2" />
+                <CheckCircleIcon className="mr-2 h-5 w-5" />
               ) : (
-                <XCircleIcon className="h-5 w-5 mr-2" />
+                <XCircleIcon className="mr-2 h-5 w-5" />
               )}
               <span>{uploadStatus.message}</span>
             </div>
@@ -162,7 +126,7 @@ export default function FileUploadSection() {
         <div className="form-control">
           <label className="label">
             <span className="label-text">
-              Selectionner un fichier PDF (Veuillez éviter les scans)
+              Sélectionner un fichier PDF (Veuillez éviter les scans)
             </span>
           </label>
           <input
@@ -193,31 +157,29 @@ export default function FileUploadSection() {
           onClick={handleUpload}
           disabled={!file || uploading}
         >
-          {!uploading && <UploadIcon className="h-5 w-5 mr-2" />}
+          {!uploading && <UploadIcon className="mr-2 h-5 w-5" />}
           {uploading ? "Enregistrement..." : "Enregistrer votre document"}
         </button>
       </div>
 
-      {/* Uploaded Files Section */}
       <div className="divider"></div>
 
       <div>
-        <h2 className="text-xl font-semibold mb-4">Vos Documents chargés</h2>
+        <h2 className="mb-4 text-xl font-semibold">Vos Documents chargés</h2>
 
         {uploadedFiles.length === 0 ? (
-          <div className="text-center py-8 bg-base-200 rounded-lg">
+          <div className="bg-base-200 rounded-lg py-8 text-center">
             <p className="text-base-content/70">
               Pas encore de documents chargés !
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="table table-zebra w-full">
+            <table className="table-zebra table w-full">
               <thead>
                 <tr>
                   <th>Nom</th>
-                  <th>Taille</th>
-                  <th>Date</th>
+                  <th>Propriétaire</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -226,12 +188,11 @@ export default function FileUploadSection() {
                   <tr key={file.id}>
                     <td className="font-medium">
                       <div className="flex items-center gap-2">
-                        <FileIcon className="h-4 w-4 text-primary" />
-                        {file.name}
+                        <FileIcon className="text-primary h-4 w-4" />
+                        {file.filename}
                       </div>
                     </td>
-                    <td>{file.size}</td>
-                    <td>{file.uploadedAt}</td>
+                    <td>{file.owner}</td>
                     <td>
                       <Link
                         href={`/devis/${file.id}`}

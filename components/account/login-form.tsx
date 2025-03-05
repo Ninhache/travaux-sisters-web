@@ -23,7 +23,7 @@ export default function LoginForm() {
     e.preventDefault();
     try {
       await login(email, password);
-      router.push("/");
+      router.push("/devis");
       /* on login complete, go to the / page */
     } catch (error) {
       console.error(error);

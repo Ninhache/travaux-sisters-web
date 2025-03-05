@@ -38,9 +38,9 @@ export default function ForumContent({ initialThreads }: ForumContentProps) {
 
   return (
     <div>
-      <div className="bg-base-100 rounded-box p-4 mb-6 shadow-sm">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-grow ">
+      <div className="bg-base-100 rounded-box mb-6 p-4 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <div className="relative flex-grow">
             <input
               type="text"
               placeholder="Search discussions..."
@@ -48,7 +48,7 @@ export default function ForumContent({ initialThreads }: ForumContentProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 h-5 w-5" />
+            <Search className="text-base-content/50 absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
           </div>
 
           <div className="flex gap-2">
@@ -59,7 +59,7 @@ export default function ForumContent({ initialThreads }: ForumContentProps) {
               </div>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
               >
                 <li>
                   <a

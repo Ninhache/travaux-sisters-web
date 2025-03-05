@@ -1,17 +1,20 @@
 import SubcategoryPageContent from "@/components/forum/categories/subcategory-page-content";
-import { mockCategories, mockThreads } from "@/lib/mock-data";
-import type { Category } from "@/types/forum";
+import { CategorySlugs, mockCategories, mockThreads } from "@/lib/mock-data";
+import { tCategory } from "@/types/forum";
 import { notFound } from "next/navigation";
+import { ParamsProps } from "../../devis/[id]/page";
 
 interface CategoryPageProps {
-  params: { category: string };
+  category: CategorySlugs;
 }
 
-export default function CategoryPage({ params }: CategoryPageProps) {
-  const { category } = params;
+export default async function CategoryPage({
+  params,
+}: ParamsProps<CategoryPageProps>) {
+  const { category } = await params;
 
-  const categoryObj: Category | undefined = mockCategories.find(
-    (cat) => cat.slug === category
+  const categoryObj: tCategory | undefined = mockCategories.find(
+    (cat) => cat.slug === category,
   );
 
   if (!categoryObj) {
@@ -19,7 +22,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   }
 
   const filteredThreads = mockThreads.filter(
-    (thread) => thread.category === categoryObj.slug
+    (thread) => thread.category === categoryObj.slug,
   );
 
   return (
