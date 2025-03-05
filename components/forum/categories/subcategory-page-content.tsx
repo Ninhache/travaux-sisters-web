@@ -1,13 +1,13 @@
 "use client";
 
 import ThreadList from "@/components/forum/threads/thread-list";
-import type { Category, Subcategory, Thread } from "@/types/forum";
+import type { Subcategory, tCategory, Thread } from "@/types/forum";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
 import NewThreadModal from "../threads/new-thread-modal";
 
 interface SubcategoryPageContentProps {
-  category: Category;
+  category: tCategory;
   subcategory: Subcategory;
   initialThreads: Thread[];
 }
@@ -25,18 +25,18 @@ export default function SubcategoryPageContent({
       searchQuery === "" ||
       thread.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       thread.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      thread.author.toLowerCase().includes(searchQuery.toLowerCase())
+      thread.author.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
     <>
       <div className="mb-6 flex items-center space-x-2">
         <h1 className="text-2xl font-bold">{subcategory.name}</h1>
-        <span className="text-gray-500 text-lg">({initialThreads.length})</span>
+        <span className="text-lg text-gray-500">({initialThreads.length})</span>
       </div>
 
-      <div className="bg-base-100 rounded-box p-4 mb-6 shadow-sm">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="bg-base-100 rounded-box mb-6 p-4 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-grow">
             <input
               type="text"
@@ -45,7 +45,7 @@ export default function SubcategoryPageContent({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50 h-5 w-5" />
+            <Search className="text-base-content/50 absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform" />
           </div>
           <button
             className="btn btn-primary gap-2"

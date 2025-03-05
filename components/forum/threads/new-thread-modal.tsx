@@ -2,12 +2,13 @@
 
 import type React from "react";
 
-import type { Category, Subcategory } from "@/types/forum";
+import type { Subcategory, tCategory } from "@/types/forum";
 import { useState } from "react";
+import { CategorySlugs } from "@/lib/mock-data";
 
 interface NewThreadModalProps {
   onClose: () => void;
-  category?: Category;
+  category?: tCategory;
   subcategory?: Subcategory;
 }
 
@@ -19,10 +20,10 @@ export default function NewThreadModal({
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(
-    category?.slug || ""
+    category?.slug || "",
   );
   const [selectedSubcategory, setSelectedSubcategory] = useState(
-    subcategory?.slug || ""
+    subcategory?.slug || "",
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -40,7 +41,7 @@ export default function NewThreadModal({
   return (
     <div className="modal modal-open">
       <div className="modal-box max-w-2xl">
-        <h3 className="font-bold text-lg mb-4">Create New Thread</h3>
+        <h3 className="mb-4 text-lg font-bold">Create New Thread</h3>
         <form onSubmit={handleSubmit}>
           <div className="form-control mb-4">
             <label className="label">
@@ -64,7 +65,9 @@ export default function NewThreadModal({
               <select
                 className="select select-bordered w-full"
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={(e) =>
+                  setSelectedCategory(e.target.value as CategorySlugs)
+                }
                 required
               >
                 <option value="">Select a category</option>

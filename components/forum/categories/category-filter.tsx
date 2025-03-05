@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { Category } from "@/types/forum";
+import { tCategory } from "@/types/forum";
 import {
   Bell,
   Coffee,
@@ -11,9 +11,9 @@ import {
 import { JSX } from "react";
 
 interface CategoryFilterProps {
-  categories: Category[];
-  selectedCategory: Category | null;
-  onSelectCategory: (category: Category) => void;
+  categories: tCategory[];
+  selectedCategory: tCategory | null;
+  onSelectCategory: (category: tCategory) => void;
 }
 
 export default function CategoryFilter({
@@ -43,8 +43,8 @@ export default function CategoryFilter({
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">Categories</h2>
-      <ul className="menu bg-base-100 w-full rounded-box">
+      <h2 className="mb-4 text-lg font-semibold">Categories</h2>
+      <ul className="menu bg-base-100 rounded-box w-full">
         {categories.map((category) => (
           <li key={category.slug}>
             <a

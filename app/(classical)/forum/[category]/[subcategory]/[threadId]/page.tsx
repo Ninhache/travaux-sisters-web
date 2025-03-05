@@ -1,16 +1,10 @@
+import { ParamsProps } from "@/app/(classical)/devis/[id]/page";
 import CommentSection from "@/components/forum/comments/comment-section";
 import ThreadContent from "@/components/forum/threads/thread-content";
 import { mockThreads } from "@/lib/mock-data";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
-interface ThreadPageProps {
-  params: {
-    category: string;
-    threadId: string;
-  };
-}
 
 const mockComments = [
   {
@@ -39,7 +33,13 @@ const mockComments = [
   },
 ];
 
-export default async function ThreadPage({ params }: ThreadPageProps) {
+interface ThreadPageProps {
+  category: string;
+  threadId: string;
+}
+export default async function ThreadPage({
+  params,
+}: ParamsProps<ThreadPageProps>) {
   const { category, threadId } = await params;
 
   const thread = mockThreads.find((t) => t.id === threadId);
@@ -59,7 +59,7 @@ export default async function ThreadPage({ params }: ThreadPageProps) {
         <ArrowLeft className="h-4 w-4" />
         Back to {category}
       </Link>
-      <main className="container mx-auto  py-4">
+      <main className="container mx-auto py-4">
         <ThreadContent thread={thread} />
 
         <CommentSection comments={threadComments} threadId={threadId} />

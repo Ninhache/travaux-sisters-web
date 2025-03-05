@@ -1,8 +1,8 @@
-import { CategoryNames, SubcategoryNames } from "./mock-data";
+import { CategorySlugs, SubcategorySlugs } from "./mock-data";
 
 export const getCategoryGradient = (
-  category: CategoryNames,
-  subcategory: SubcategoryNames
+  category: CategorySlugs,
+  subcategory: SubcategorySlugs,
 ) => {
   const categoryColor = categoryToColor(category);
   const subcategoryColor = subcategoryToColor(subcategory);
@@ -12,8 +12,8 @@ export const getCategoryGradient = (
   };
 };
 
-const subcategoryToColor = (subcategory: SubcategoryNames) => {
-  const colorMap: Record<SubcategoryNames, string> = {
+const subcategoryToColor = (subcategory: SubcategorySlugs) => {
+  const colorMap: Record<SubcategorySlugs, string> = {
     announcements: "#FDE68A",
     api: "#BFDBFE",
     "feature-requests": "#D8B4FE",
@@ -24,8 +24,8 @@ const subcategoryToColor = (subcategory: SubcategoryNames) => {
   return colorMap[subcategory] || "#D1D5DB";
 };
 
-const categoryToColor = (category: CategoryNames) => {
-  const colorMap: Record<CategoryNames, string> = {
+const categoryToColor = (category: CategorySlugs) => {
+  const colorMap: Record<CategorySlugs, string> = {
     "general-discussion": "#A7F3D0",
     support: "#BAE6FD",
     development: "#C4B5FD",
