@@ -21,7 +21,7 @@ export async function getDevis(token: string): Promise<Devis[]> {
 }
 
 export async function getDevisById(id: string, token: string): Promise<Devis> {
-  const response = await fetch(`${getAPIBaseURL()}/devis/${id}`, {
+  const response = await fetch(`${getAPIBaseURL()}/devis/${id}?vue=inf`, {
     headers: {
       Authorization: `${token}`,
     },

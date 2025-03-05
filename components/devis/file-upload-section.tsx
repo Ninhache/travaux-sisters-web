@@ -4,8 +4,11 @@ import { useSession } from "@/context/session-context";
 import { Devis, getDevis, uploadDevis } from "@/lib/api/devis";
 import {
   CheckCircleIcon,
+  CroissantIcon,
+  Cross,
   EyeIcon,
   FileIcon,
+  TrashIcon,
   UploadIcon,
   XCircleIcon,
 } from "lucide-react";
@@ -193,14 +196,16 @@ export default function FileUploadSection() {
                       </div>
                     </td>
                     <td>{file.owner}</td>
-                    <td>
+                    <td className="flex gap-2">
                       <Link
                         href={`/devis/${file.id}`}
-                        className="btn btn-sm btn-ghost"
+                        className="btn btn-sm flex w-12 items-center justify-center bg-gray-300"
                       >
                         <EyeIcon className="h-4 w-4" />
-                        <span className="ml-1">Voir</span>
                       </Link>
+                      <button className="btn btn-sm btn-error flex w-12 items-center justify-center">
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
