@@ -1,11 +1,13 @@
 "use client";
 
+import PDFGlossary from "@/components/devis/pdf/PDFGlossary";
+import PDFReader from "@/components/devis/pdf/PDFReader";
 import { useSession } from "@/context/session-context";
 import { getDevisById } from "@/lib/api/devis";
 import { ArrowLeft, Download, FileText } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export type ParamsProps<P = Record<string, unknown>> = {
   params: Promise<P>;
@@ -48,12 +50,16 @@ export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
       }
     }
 
+<<<<<<< HEAD
     if (!loading) {
       fetchDevis();
     }
   }, [params, token, loading]); // Removed router from dependencies
 
   if (loading || isLoading) {
+=======
+  if (loading || !devis) {
+>>>>>>> ec13110b1245894db4e4120b04c71df45bed4e28
     return (
       <main className="bg-base-200 flex w-full items-center justify-center p-4">
         <p className="text-lg font-semibold">Chargement...</p>
@@ -117,10 +123,11 @@ export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
               </div>
             </div>
 
-            <div className="bg-base-300 flex min-h-[300px] w-full items-center justify-center rounded-lg sm:min-h-[500px]">
-              <p className="text-base-content/70 p-4 text-center">
-                Faut imaginer le PDF . . .
-              </p>
+            <div className="bg-base-300 flex min-h-[500px] w-full items-center justify-center rounded-lg">
+              <PDFReader id={String(devis.id)}/>
+            </div>
+            <div>
+              <PDFGlossary id={String(devis.id)}/>
             </div>
           </div>
         </div>

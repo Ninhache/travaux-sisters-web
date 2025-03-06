@@ -20,6 +20,7 @@ export async function fetchAPI({
   requestData.headers = headers;
   if (body) {
     requestData.body = JSON.stringify(body);
+    // requestData.body = body;
   }
 
   return fetch(`${getAPIBaseURL()}${endpoint}`, requestData);

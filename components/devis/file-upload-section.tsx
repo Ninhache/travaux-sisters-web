@@ -14,7 +14,6 @@ import {
   EyeIcon,
   FileIcon,
   TrashIcon,
-  UploadIcon,
   XCircleIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -84,7 +83,6 @@ export default function FileUploadSection() {
     try {
       // @ts-ignore
       const newDevis = await uploadDevis(file, token);
-      // const  newDevis = await uploadDevis(file);
       setUploadedFiles((prev) => [newDevis, ...prev]);
       setFile(null);
       setUploadStatus({
