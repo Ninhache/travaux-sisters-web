@@ -17,7 +17,12 @@ export default function CategoryMenu({ categories }: CategoryMenuProps) {
       <h2 className="mb-4 text-lg font-semibold">Categories</h2>
       <ul className="menu bg-base-100 rounded-box w-full">
         <li>
-          <Link href="/forum" className={pathname === "/forum" ? "active" : ""}>
+          <Link
+            href="/forum"
+            className={
+              pathname === "/forum" ? "active text-primary font-bold" : ""
+            }
+          >
             <Hash className="h-4 w-4" />
             <span>Toutes les catégories</span>
           </Link>
