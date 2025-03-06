@@ -60,7 +60,7 @@ type User = {
   city: string;
 };
 
-type Comment = {
+export type Comment = {
   id: number;
   contenu: string;
   date: string;

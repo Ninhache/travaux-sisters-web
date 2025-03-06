@@ -2,28 +2,23 @@
 
 import type React from "react";
 
-import type { Subcategory, tCategory } from "@/types/forum";
 import { useState } from "react";
 import { CategorySlugs } from "@/lib/mock-data";
+import { Category } from "@/lib/api/forum";
 
 interface NewThreadModalProps {
   onClose: () => void;
-  category?: tCategory;
-  subcategory?: Subcategory;
+  category?: Category;
 }
 
 export default function NewThreadModal({
   onClose,
   category,
-  subcategory,
 }: NewThreadModalProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(
-    category?.slug || "",
-  );
-  const [selectedSubcategory, setSelectedSubcategory] = useState(
-    subcategory?.slug || "",
+    category?.libelle || "",
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -33,7 +28,6 @@ export default function NewThreadModal({
       title,
       content,
       category: selectedCategory,
-      subcategory: selectedSubcategory,
     });
     onClose();
   };
@@ -71,24 +65,6 @@ export default function NewThreadModal({
                 required
               >
                 <option value="">Select a category</option>
-                {/* You would populate this dynamically with available categories */}
-              </select>
-            </div>
-          )}
-
-          {(!subcategory || selectedCategory) && (
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Subcategory</span>
-              </label>
-              <select
-                className="select select-bordered w-full"
-                value={selectedSubcategory}
-                onChange={(e) => setSelectedSubcategory(e.target.value)}
-                required
-              >
-                <option value="">Select a subcategory</option>
-                {/* You would populate this dynamically with available subcategories */}
               </select>
             </div>
           )}

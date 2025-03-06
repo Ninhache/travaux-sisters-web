@@ -55,12 +55,16 @@ export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
     }
   }, [params, token, loading]); // Removed router from dependencies
 
-  if (loading || isLoading || !devis) {
+  if (loading || isLoading) {
     return (
       <main className="bg-base-200 flex w-full items-center justify-center p-4">
         <p className="text-lg font-semibold">Chargement...</p>
       </main>
     );
+  }
+
+  if (!devis) {
+    throw Error("Le devis est NULL");
   }
 
   if (error) {
@@ -120,10 +124,10 @@ export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
             </div>
 
             <div className="bg-base-300 flex min-h-[500px] w-full items-center justify-center rounded-lg">
-              <PDFReader id={String(devis.id)}/>
+              <PDFReader id={String(devis.id)} />
             </div>
             <div>
-              <PDFGlossary id={String(devis.id)}/>
+              <PDFGlossary id={String(devis.id)} />
             </div>
           </div>
         </div>

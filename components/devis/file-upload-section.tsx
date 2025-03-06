@@ -77,11 +77,17 @@ export default function FileUploadSection() {
       return;
     }
 
+    if (!token) {
+      setUploadStatus({ type: "error", message: "Faut être connecté" });
+      return;
+    }
+
     setUploading(true);
     setUploadStatus({ type: null, message: "" });
 
     try {
       if (!token) return;
+
       const newDevis = await uploadDevis(file, token);
       setUploadedFiles((prev) => [newDevis, ...prev]);
       setFile(null);
