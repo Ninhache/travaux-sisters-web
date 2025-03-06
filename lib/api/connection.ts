@@ -22,13 +22,15 @@ export async function handleLogin({
     },
   });
 
+  console.log("Response", response);
+
   if (!response.ok) {
     throw new Error("Invalid credentials");
   }
 
   const data = await response.json();
 
-  console.log("Handle Login", data);
-
-  return data.token;
+  return {
+    ...data,
+  };
 }
