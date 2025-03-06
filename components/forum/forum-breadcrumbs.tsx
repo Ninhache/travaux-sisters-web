@@ -1,8 +1,9 @@
 "use client";
-import { mockCategories, mockThreads } from "@/lib/mock-data";
+import { mockCategories } from "@/lib/mock-data";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
+// todo: fix breadcrumbs lol
 export default function ForumBreadcrumbs() {
   const params = useParams();
 
@@ -21,7 +22,7 @@ export default function ForumBreadcrumbs() {
 
       if (subcategorySlug) {
         const subcat = cat.subcategories.find(
-          (s) => s.slug === subcategorySlug
+          (s) => s.slug === subcategorySlug,
         );
         if (subcat) {
           subcategoryName = subcat.name;
@@ -30,15 +31,15 @@ export default function ForumBreadcrumbs() {
     }
   }
 
-  if (threadId) {
-    const thr = mockThreads.find((t) => t.id === threadId);
-    if (thr) {
-      threadTitle = thr.title;
-    }
-  }
+  // if (threadId) {
+  //   const thr = mockThreads.find((t) => t.id === threadId);
+  //   if (thr) {
+  //     threadTitle = thr.title;
+  //   }
+  // }
 
   return (
-    <div className="text-sm breadcrumbs mb-4">
+    <div className="breadcrumbs mb-4 text-sm">
       <ul>
         <li>
           <Link href="/forum">Forum</Link>

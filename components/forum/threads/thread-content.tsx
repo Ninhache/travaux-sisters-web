@@ -1,7 +1,7 @@
 "use client";
 
+import { Thread } from "@/lib/api/forum";
 import { getCategoryGradient } from "@/lib/badget-color";
-import type { Thread } from "@/types/forum";
 import {
   Calendar,
   Flag,
@@ -31,23 +31,23 @@ export default function ThreadContent({ thread }: ThreadContentProps) {
   };
 
   return (
-    <div className="bg-base-100 rounded-box p-6 shadow-sm mb-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+    <div className="bg-base-100 rounded-box mb-6 p-6 shadow-sm">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{thread.title}</h1>
         {/* <div className="badge badge-outline capitalize">{thread.category}</div> */}
         <div
-          className="badge badge-outline capitalize font-bold text-white"
-          style={getCategoryGradient(thread.category, thread.subcategory)}
+          className="badge badge-outline font-bold text-white capitalize"
+          // style={getCategoryGradient(thread., thread.subcategory)}
         >
           {/* {thread.category} */}
-          {thread.subcategory}
+          {thread.categorie[0].libelle}
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-6 text-sm text-base-content/60">
+      <div className="text-base-content/60 mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
         <div className="flex items-center gap-1">
           <User className="h-4 w-4" />
-          <span>{thread.author}</span>
+          <span>{thread.author.name}</span>
         </div>
         <div className="flex items-center gap-1">
           <Calendar className="h-4 w-4" />
@@ -60,10 +60,10 @@ export default function ThreadContent({ thread }: ThreadContentProps) {
       </div>
 
       <div className="prose max-w-none">
-        <p>{thread.text}</p>
+        <p>{thread.textResume}</p>
       </div>
 
-      <div className="flex gap-2 mt-6">
+      <div className="mt-6 flex gap-2">
         <button
           className={`btn btn-sm ${
             liked ? "btn-primary" : "btn-outline"

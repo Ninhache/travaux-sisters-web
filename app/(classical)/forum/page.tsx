@@ -1,6 +1,6 @@
 import ForumContent from "@/components/forum/threads/forum-content";
+import { getCategories } from "@/lib/api/category";
 import { getThreads } from "@/lib/api/forum";
-import { mockThreads } from "@/lib/mock-data";
 import { Suspense } from "react";
 
 export default async function ForumPage() {
@@ -16,4 +16,3 @@ export default async function ForumPage() {
     </Suspense>
   );
 }
-("");

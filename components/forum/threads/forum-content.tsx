@@ -1,9 +1,8 @@
 "use client";
 
-import NewThreadModal from "@/components/forum/threads/new-thread-modal";
 import ThreadList from "@/components/forum/threads/thread-list";
 import { Thread } from "@/lib/api/forum";
-import { Filter, Plus, Search } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 import { useState } from "react";
 
 interface ForumContentProps {
@@ -13,7 +12,7 @@ interface ForumContentProps {
 export default function ForumContent({ initialThreads }: ForumContentProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [showNewThreadModal, setShowNewThreadModal] = useState(false);
+  // const [showNewThreadModal, setShowNewThreadModal] = useState(false);
 
   const filteredThreads = initialThreads.filter((thread) => {
     const q = searchQuery.toLowerCase();
@@ -77,22 +76,25 @@ export default function ForumContent({ initialThreads }: ForumContentProps) {
                 </li>
               </ul>
             </div>
-            <button
+            {/* <button
               className="btn btn-primary gap-2"
               onClick={() => setShowNewThreadModal(true)}
             >
               <Plus className="h-4 w-4" />
               New Thread
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
 
       <ThreadList initialThreads={sortedThreads} />
 
-      {showNewThreadModal && (
-        <NewThreadModal onClose={() => setShowNewThreadModal(false)} />
-      )}
+      {/* {showNewThreadModal && (
+        <NewThreadModal
+          category={categories}
+          onClose={() => setShowNewThreadModal(false)}
+        />
+      )} */}
     </div>
   );
 }

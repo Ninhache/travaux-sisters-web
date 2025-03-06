@@ -1,7 +1,12 @@
 "use client";
 
 import { useSession } from "@/context/session-context";
-import { getThreads, postCommentsOnMessageId, Thread } from "@/lib/api/forum";
+import {
+  Comment,
+  getThreads,
+  postCommentsOnMessageId,
+  Thread,
+} from "@/lib/api/forum";
 import {
   Calendar,
   ChevronDown,
@@ -11,24 +16,6 @@ import {
   User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-
-interface ComponentThread {
-  id: string;
-  title: string;
-  text: string;
-  replies: number;
-  author: string;
-  date: string;
-  category: string;
-  subcategory: string;
-}
-
-interface ComponentComment {
-  id: number;
-  author: string;
-  text: string;
-  date: string;
-}
 
 interface ThreadListProps {
   initialThreads?: Thread[];
@@ -47,7 +34,7 @@ export default function ThreadList({
     {},
   );
   const [threadComments, setThreadComments] = useState<
-    Record<string, ComponentComment[]>
+    Record<string, Comment[]>
   >({});
   const [loading, setLoading] = useState<boolean>(!initialThreads);
   const [commentLoading, setCommentLoading] = useState<Record<string, boolean>>(
@@ -134,10 +121,10 @@ export default function ThreadList({
         contenu: commentInputs[threadId],
       });
 
-      const newComment: ComponentComment = {
+      const newComment: Comment = {
         id: response.id,
-        author: response.user.username,
-        text: response.contenu,
+        user: response.user,
+        contenu: response.contenu,
         date: response.date,
       };
 
@@ -202,7 +189,7 @@ interface ThreadCardProps {
   thread: Thread;
   isExpanded: boolean;
   toggleExpand: () => void;
-  comments: ComponentComment[];
+  comments: Comment[];
   commentInput: string;
   onCommentInputChange: (value: string) => void;
   onSubmitComment: () => void;
@@ -277,12 +264,12 @@ function ThreadCard({
                 comments.map((comment) => (
                   <div key={comment.id} className="bg-base-200 rounded-lg p-3">
                     <div className="flex items-center justify-between">
-                      <div className="font-medium">{comment.author}</div>
+                      <div className="font-medium">{comment.user.username}</div>
                       <div className="text-base-content/60 text-xs">
                         {comment.date}
                       </div>
                     </div>
-                    <p className="mt-1 text-sm">{comment.text}</p>
+                    <p className="mt-1 text-sm">{comment.contenu}</p>
                   </div>
                 ))
               ) : (

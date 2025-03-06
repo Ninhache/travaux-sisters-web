@@ -1,24 +1,16 @@
 "use client";
 
-import type React from "react";
-
-import { tCategory } from "@/types/forum";
-import { Folder, Hash, HelpCircle, MessageSquare } from "lucide-react";
+import { Category } from "@/lib/api/forum";
+import { Hash } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 interface CategoryMenuProps {
-  categories: readonly tCategory[];
+  categories: readonly Category[];
 }
 
 export default function CategoryMenu({ categories }: CategoryMenuProps) {
   const pathname = usePathname();
-
-  const categoryIcons: { [key: string]: React.ReactNode } = {
-    "general-discussion": <MessageSquare className="h-4 w-4" />,
-    support: <HelpCircle className="h-4 w-4" />,
-    development: <Folder className="h-4 w-4" />,
-  };
 
   return (
     <div className="bg-base-100 rounded-box p-4 shadow-sm">
@@ -27,38 +19,44 @@ export default function CategoryMenu({ categories }: CategoryMenuProps) {
         <li>
           <Link href="/forum" className={pathname === "/forum" ? "active" : ""}>
             <Hash className="h-4 w-4" />
-            <span>All Categories</span>
+            <span>Toutes les catégories</span>
           </Link>
         </li>
-        {categories.map((category, index) => (
-          <li key={index}>
-            <details>
-              <summary
-                className={
-                  pathname.startsWith(`/forum/${category.slug}`) ? "active" : ""
-                }
-              >
-                {categoryIcons[category.slug] || <Folder className="h-4 w-4" />}
-                <span className="capitalize">{category.name}</span>
-              </summary>
-              <ul>
-                {category.subcategories.map((subcategory) => (
-                  <li key={subcategory.slug}>
+        {categories.map((category) => (
+          <li key={category.id}>
+            <Link
+              href={`/forum/${category.id}`}
+              className={
+                // pathname.startsWith(`/forum/${category.id}`) ? "active" : ""
+                pathname === `/forum/${category.id}`
+                  ? "text-primary font-bold"
+                  : ""
+              }
+            >
+              <span className="capitalize">{category.libelle}</span>
+            </Link>
+            {category.categorieChildren.length > 0 && (
+              <ul className="ml-4 border-l border-gray-300 pl-2">
+                {category.categorieChildren.map((subcategory) => (
+                  <li key={subcategory.id}>
                     <Link
-                      href={`/forum/${category.slug}/${subcategory.slug}`}
+                      href={`/forum/${subcategory.id}`}
                       className={
-                        pathname ===
-                        `/forum/${category.slug}/${subcategory.slug}`
-                          ? "active"
+                        pathname === `/forum/${subcategory.id}`
+                          ? "text-primary font-bold"
                           : ""
                       }
+
+                      // className={
+                      //   pathname === `/forum/${subcategory.id}` ? "active" : ""
+                      // }
                     >
-                      {subcategory.name}
+                      {subcategory.libelle}
                     </Link>
                   </li>
                 ))}
               </ul>
-            </details>
+            )}
           </li>
         ))}
       </ul>
