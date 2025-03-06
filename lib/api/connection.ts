@@ -1,4 +1,4 @@
-import {getAPIBaseURL} from "@/config/url";
+import { fetchAPI } from "@/lib/api/utils";
 
 export interface LoginParams {
   email: string;
@@ -13,23 +13,24 @@ export async function handleLogin({
   email,
   password,
 }: LoginParams): Promise<LoginResponse> {
-  const response = await fetch(`${getAPIBaseURL()}/connect`, {
+  const response = await fetchAPI({
+    endpoint: "/users/login",
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+    body: {
+      mail: email,
+      pwd: password,
     },
-    body: JSON.stringify({ email, pwd: password }),
   });
 
   if (!response.ok) {
     throw new Error("Invalid credentials");
   }
 
-  const data = await response.json();
+  const data = await response.text();
 
   console.log("Handle Login", data);
 
   return {
-    ...data,
+    token: data,
   };
 }

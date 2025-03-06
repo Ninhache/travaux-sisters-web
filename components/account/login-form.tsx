@@ -4,7 +4,7 @@ import { useSession } from "@/context/session-context";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -31,12 +31,12 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="card w-full max-w-md bg-base-100 shadow-xl">
+    <div className="card bg-base-100 w-full max-w-md shadow-xl">
       <div className="card-body">
-        <h2 className="card-title text-2xl font-semibold justify-center">
+        <h2 className="card-title justify-center text-2xl font-semibold">
           Se connecter !
         </h2>
-        <p className="text-center text-base-content/70 mb-4">
+        <p className="text-base-content/70 mb-4 text-center">
           Entrez vos identifiants pour accéder à votre compte
         </p>
 
@@ -50,19 +50,19 @@ export default function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="input input-bordered bg-white w-full"
+              className="input input-bordered w-full bg-white"
               required
             />
           </div>
 
           <div className="form-control w-full">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <label className="label">
                 <span className="label-text">Password</span>
               </label>
               <Link
                 href="#"
-                className="text-sm text-base-content/70 hover:text-primary transition-colors label-text-alt"
+                className="text-base-content/70 hover:text-primary label-text-alt text-sm transition-colors"
               >
                 Mot de passe oublié?
               </Link>
@@ -73,12 +73,12 @@ export default function LoginForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
-                className="input input-bordered w-full pr-10 bg-white"
+                className="input input-bordered w-full bg-white pr-10"
                 required
               />
               <button
                 type="button"
-                className=" absolute right-2 top-1/2 -translate-y-1/2 p-2 cursor-pointer"
+                className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer p-2"
                 onClick={togglePasswordVisibility}
               >
                 {showPassword ? (
