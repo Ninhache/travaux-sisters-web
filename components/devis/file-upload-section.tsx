@@ -179,7 +179,7 @@ export default function FileUploadSection() {
         </div>
 
         <button
-          className={`btn btn-primary w-full sm:w-auto ${uploading ? "loading" : ""}`}
+          className={`btn btn-primary w-full sm:w-auto`}
           onClick={handleUpload}
           disabled={!file || uploading}
         >
