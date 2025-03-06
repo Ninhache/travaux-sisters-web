@@ -52,7 +52,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
   });
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  // test
   const { user, token } = session;
 
   // Load session from localStorage on mount
@@ -102,10 +102,12 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
     setLoading(true);
     try {
       const { token } = await handleLogin({ mail, password });
+      localStorage.setItem("accessToken", token);
       setSession({ token });
 
       await fetchProfile(token);
     } catch (error) {
+      logout();
       console.error("Login error:", error);
     } finally {
       setLoading(false);
@@ -115,6 +117,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
   const logout = () => {
     setSession({ user: null, token: null });
     localStorage.removeItem(LOCAL_STORAGE_KEY);
+    localStorage.removeItem("accessToken");
     setIsConnected(false);
     setLoading(false);
   };
@@ -123,7 +126,6 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
     async (passedToken?: string) => {
       const authToken = passedToken ?? token;
       if (!authToken) {
-        console.warn("fetchProfile: No token available.");
         return;
       }
 
@@ -132,7 +134,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
         const user = await handleProfile({ token: authToken });
         setSession({ user });
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        logout();
       } finally {
         setLoading(false);
       }

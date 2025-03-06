@@ -1,8 +1,10 @@
-import { getAPIBaseURL } from "@/config/url";
-import { Category } from "./forum";
+import { fetchAPI } from "@/lib/api/utils";
+import { tCategory } from "@/types/forum";
 
-export async function getCategories(): Promise<Category[]> {
-  const response = await fetch(`${getAPIBaseURL()}/categorie`);
+export async function getCategories(): Promise<tCategory[]> {
+  const response = await fetchAPI({
+    endpoint: "/categorie",
+  });
 
   if (!response.ok) {
     throw new Error("Failed to fetch categories");
