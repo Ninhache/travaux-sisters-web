@@ -9,10 +9,10 @@ export default function RootLayout({
   return (
     <>
       <Header />
-      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
         {children}
       </main>
-      <Footer/>
+      <Footer />
     </>
   );
 }
