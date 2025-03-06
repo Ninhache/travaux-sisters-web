@@ -52,7 +52,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
   });
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  // test
   const { user, token } = session;
 
   // Load session from localStorage on mount
@@ -107,6 +107,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
 
       await fetchProfile(token);
     } catch (error) {
+      logout();
       console.error("Login error:", error);
     } finally {
       setLoading(false);
@@ -116,6 +117,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
   const logout = () => {
     setSession({ user: null, token: null });
     localStorage.removeItem(LOCAL_STORAGE_KEY);
+    localStorage.removeItem("accessToken");
     setIsConnected(false);
     setLoading(false);
   };
@@ -133,10 +135,10 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
         const user = await handleProfile({ token: authToken });
         setSession({ user });
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        logout();
+        // console.error("Error fetching profile:", error);
       } finally {
         setLoading(false);
-        localStorage.removeItem("accessToken");
       }
     },
     [token],

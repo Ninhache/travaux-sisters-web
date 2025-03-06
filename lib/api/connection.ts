@@ -28,10 +28,7 @@ export async function handleLogin({
     throw new Error("Invalid credentials");
   }
 
-  console.log("Response", response);
   const data = await response.json();
-
-  console.log("Handle Login", data);
 
   return {
     ...data,
