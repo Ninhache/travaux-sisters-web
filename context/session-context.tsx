@@ -136,7 +136,6 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
         console.error("Error fetching profile:", error);
       } finally {
         setLoading(false);
-        window.location.href = "/";
         localStorage.removeItem("accessToken");
       }
     },
