@@ -102,6 +102,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
     setLoading(true);
     try {
       const { token } = await handleLogin({ email, password });
+      localStorage.setItem("accessToken", token);
       setSession({ token });
 
       await fetchProfile(token);
@@ -135,6 +136,8 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
         console.error("Error fetching profile:", error);
       } finally {
         setLoading(false);
+        window.location.href = "/";
+        localStorage.removeItem("accessToken");
       }
     },
     [token],
