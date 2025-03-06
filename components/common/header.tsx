@@ -26,15 +26,17 @@ const defaultNavConfig: NavbarConfig = {
 };
 
 const ConnectedRightPart = () => {
-  const { logout, isConnected } = useSession();
+  const { user, logout } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+
+  if (!user) return;
 
   return (
     <div className="flex items-center gap-2">
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="bg-base-200 hover:bg-base-300 flex items-center gap-2 rounded-lg px-3 py-2 transition-colors"
+          className="bg-base-200 hover:bg-base-300 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors"
         >
           <div className="h-8 w-8 overflow-hidden rounded-full">
             <img
@@ -52,7 +54,7 @@ const ConnectedRightPart = () => {
             <div className="border-base-200 border-b px-4 py-2">
               <p className="text-sm font-medium">Mon profil</p>
               <p className="text-base-content/70 truncate text-xs">
-                user@example.com
+                {user.mail}
               </p>
             </div>
             <ul>

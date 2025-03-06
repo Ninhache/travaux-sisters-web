@@ -1,11 +1,15 @@
-import { getAPIBaseURL } from "@/config/url";
-import { Devis, GlossaryEntry } from "@/types/devis";
+import { GlossaryEntry } from "@/types/devis";
+import { fetchAPI } from "@/lib/api/utils";
+
+export type Devis = {
+  id: number;
+  filename: string;
+  owner: string;
+};
 
 export async function getDevis(token: string): Promise<Devis[]> {
-  const response = await fetch(`${getAPIBaseURL()}/devis`, {
-    headers: {
-      Authorization: `${token}`,
-    },
+  const response = await fetchAPI({
+    endpoint: "/devis",
   });
 
   if (!response.ok) {
@@ -16,10 +20,8 @@ export async function getDevis(token: string): Promise<Devis[]> {
 }
 
 export async function getDevisById(id: string, token: string): Promise<Devis> {
-  const response = await fetch(`${getAPIBaseURL()}/devis/${id}?vue=inf`, {
-    headers: {
-      Authorization: `${token}`,
-    },
+  const response = await fetchAPI({
+    endpoint: `/devis/${id}?vue=inf`,
   });
 
 
@@ -31,10 +33,8 @@ export async function getDevisById(id: string, token: string): Promise<Devis> {
 }
 
 export async function getPDFById(id: string, token: string): Promise<string> {
-  const response = await fetch(`${getAPIBaseURL()}/devis/${id}?vue=pdf`, {
-    headers: {
-      Authorization: `${token}`,
-    },
+  const response = await fetchAPI({
+    endpoint:`/devis/${id}?vue=pdf`
   });
 
 
@@ -49,10 +49,8 @@ export async function getPDFById(id: string, token: string): Promise<string> {
 }
 
 export async function getGlossaryById(id: string, token: string): Promise<GlossaryEntry[]> {
-  const response = await fetch(`${getAPIBaseURL()}/devis/${id}?vue=glo`, {
-    headers: {
-      Authorization: `${token}`,
-    },
+  const response = await fetchAPI({
+    endpoint: `/devis/${id}?vue=glo`
   });
 
   if (!response.ok) {
@@ -62,16 +60,27 @@ export async function getGlossaryById(id: string, token: string): Promise<Glossa
   return response.json() as Promise<GlossaryEntry[]>
 }
 
+export async function deleteDevisById(id: number, token: string) {
+  const response = await fetchAPI({
+    endpoint: `/devis/${id}`,
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch devis");
+  }
+
+  return true;
+}
+
 export async function uploadDevis(file: File, token: string): Promise<Devis> {
   const formData = new FormData();
   formData.append("devis", file);
 
-  const response = await fetch(`${getAPIBaseURL()}/devis`, {
+  const response = await fetchAPI({
+    endpoint: "/devis",
     method: "POST",
     body: formData,
-    headers: {
-      Authorization: `${token}`,
-    },
   });
 
   if (!response.ok) {

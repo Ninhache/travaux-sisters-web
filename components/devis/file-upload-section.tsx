@@ -1,12 +1,17 @@
 "use client";
 
+import type React from "react";
+
 import { useSession } from "@/context/session-context";
-import { getDevis, uploadDevis } from "@/lib/api/devis";
-import { Devis } from "@/types/devis";
+import {
+  type Devis,
+  getDevis,
+} from "@/lib/api/devis";
 import {
   CheckCircleIcon,
   EyeIcon,
   FileIcon,
+  TrashIcon,
   UploadIcon,
   XCircleIcon,
 } from "lucide-react";
@@ -38,7 +43,7 @@ export default function FileUploadSection() {
     }
 
     fetchDevis();
-  }, []);
+  }, [token]); // Added token as a dependency
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -100,14 +105,28 @@ export default function FileUploadSection() {
     }
   }, [token, file]);
 
+  const handleDelete = async (id: number) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce fichier ?")) {
+      return;
+    }
+
+    try {
+      // @ts-ignore
+      await deleteDevisById(id, token);
+      setUploadedFiles((prev) => prev.filter((file) => file.id !== id));
+    } catch (error) {
+      console.error("Erreur lors de la suppression du devis:", error);
+    }
+  };
+
   const viewFile = (id: number) => {
     router.push(`/devis/${id}`);
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Ajouter un devis !</h2>
+        <h2 className="text-lg font-semibold sm:text-xl">Ajouter un devis !</h2>
 
         {uploadStatus.type && (
           <div
@@ -115,18 +134,20 @@ export default function FileUploadSection() {
           >
             <div className="flex items-center">
               {uploadStatus.type === "success" ? (
-                <CheckCircleIcon className="mr-2 h-5 w-5" />
+                <CheckCircleIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               ) : (
-                <XCircleIcon className="mr-2 h-5 w-5" />
+                <XCircleIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               )}
-              <span>{uploadStatus.message}</span>
+              <span className="text-sm sm:text-base">
+                {uploadStatus.message}
+              </span>
             </div>
           </div>
         )}
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text">
+            <span className="label-text text-sm sm:text-base">
               Sélectionner un fichier PDF (Veuillez éviter les scans)
             </span>
           </label>
@@ -135,48 +156,84 @@ export default function FileUploadSection() {
             type="file"
             accept=".pdf"
             onChange={handleFileChange}
-            className="file-input file-input-bordered w-full"
+            className="file-input file-input-bordered w-full text-sm sm:text-base"
           />
           <label className="label">
-            <span className="label-text-alt text-base-content/70">
+            <span className="label-text-alt text-base-content/70 text-xs sm:text-sm">
               Taille maximale: 5MB
             </span>
           </label>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {file && (
-            <div className="badge badge-outline gap-1">
-              <FileIcon className="h-3 w-3" />
-              {file.name}
+            <div className="badge badge-outline gap-1 text-xs break-all">
+              <FileIcon className="h-3 w-3 flex-shrink-0" />
+              <span className="max-w-[200px] truncate sm:max-w-xs">
+                {file.name}
+              </span>
             </div>
           )}
         </div>
 
         <button
-          className={`btn btn-primary ${uploading ? "loading" : ""}`}
+          className={`btn btn-primary w-full sm:w-auto`}
           onClick={handleUpload}
           disabled={!file || uploading}
         >
-          {!uploading && <UploadIcon className="mr-2 h-5 w-5" />}
-          {uploading ? "Enregistrement..." : "Enregistrer votre document"}
+          {/* {!uploading && <UploadIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />} */}
+          <span className="text-sm sm:text-base">
+            {uploading ? "Enregistrement..." : "Enregistrer votre document"}
+          </span>
         </button>
       </div>
 
-      <div className="divider"></div>
+      <div className="divider my-2"></div>
 
       <div>
-        <h2 className="mb-4 text-xl font-semibold">Vos Documents chargés</h2>
+        <h2 className="mb-3 text-lg font-semibold sm:mb-4 sm:text-xl">
+          Vos Documents chargés
+        </h2>
 
         {uploadedFiles.length === 0 ? (
-          <div className="bg-base-200 rounded-lg py-8 text-center">
-            <p className="text-base-content/70">
+          <div className="bg-base-200 rounded-lg py-6 text-center sm:py-8">
+            <p className="text-base-content/70 text-sm sm:text-base">
               Pas encore de documents chargés !
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="table-zebra table w-full">
+          <div className="-mx-3 overflow-x-auto sm:mx-0">
+            <div className="grid gap-4 sm:hidden">
+              {uploadedFiles.map((file) => (
+                <div key={file.id} className="card bg-base-200 shadow-sm">
+                  <div className="card-body p-4">
+                    <div className="mb-2 flex items-center gap-2">
+                      <FileIcon className="text-primary h-4 w-4" />
+                      <h3 className="truncate text-sm font-medium">
+                        {file.filename}
+                      </h3>
+                    </div>
+                    <p className="mb-3 text-xs">Propriétaire: {file.owner}</p>
+                    <div className="card-actions justify-end">
+                      <Link
+                        href={`/devis/${file.id}`}
+                        className="btn btn-sm btn-outline"
+                      >
+                        <EyeIcon className="mr-1 h-4 w-4" /> Voir
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(file.id)}
+                        className="btn btn-sm btn-error"
+                      >
+                        <TrashIcon className="mr-1 h-4 w-4" /> Supprimer
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <table className="table-zebra hidden table w-full sm:table">
               <thead>
                 <tr>
                   <th>Nom</th>
@@ -194,14 +251,19 @@ export default function FileUploadSection() {
                       </div>
                     </td>
                     <td>{file.owner}</td>
-                    <td>
+                    <td className="flex gap-2">
                       <Link
                         href={`/devis/${file.id}`}
-                        className="btn btn-sm btn-ghost"
+                        className="btn btn-sm flex w-12 items-center justify-center bg-gray-300"
                       >
                         <EyeIcon className="h-4 w-4" />
-                        <span className="ml-1">Voir</span>
                       </Link>
+                      <button
+                        onClick={() => handleDelete(file.id)}
+                        className="btn btn-sm btn-error flex w-12 items-center justify-center"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}

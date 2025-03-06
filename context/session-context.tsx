@@ -43,7 +43,7 @@ interface ProviderProps {
   children: ReactNode;
 }
 
-const LOCAL_STORAGE_KEY = "session";
+export const LOCAL_STORAGE_KEY = "session";
 
 const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
   const [session, setSessionState] = useState<SessionState>({
