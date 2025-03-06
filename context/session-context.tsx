@@ -98,10 +98,10 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
     });
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (mail: string, password: string) => {
     setLoading(true);
     try {
-      const { token } = await handleLogin({ email, password });
+      const { token } = await handleLogin({ mail, password });
       setSession({ token });
 
       await fetchProfile(token);

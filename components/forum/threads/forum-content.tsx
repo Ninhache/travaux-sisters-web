@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Filter, Search, Plus } from "lucide-react";
-import ThreadList from "@/components/forum/threads/thread-list";
 import NewThreadModal from "@/components/forum/threads/new-thread-modal";
-import type { Thread } from "@/types/forum";
+import ThreadList from "@/components/forum/threads/thread-list";
+import { Thread } from "@/lib/api/forum";
+import { Filter, Plus, Search } from "lucide-react";
+import { useState } from "react";
 
 interface ForumContentProps {
   initialThreads: Thread[];
@@ -15,24 +15,22 @@ export default function ForumContent({ initialThreads }: ForumContentProps) {
   const [sortBy, setSortBy] = useState("newest");
   const [showNewThreadModal, setShowNewThreadModal] = useState(false);
 
-  // 1) Filter by search
   const filteredThreads = initialThreads.filter((thread) => {
     const q = searchQuery.toLowerCase();
     return (
       thread.title.toLowerCase().includes(q) ||
-      thread.text.toLowerCase().includes(q) ||
-      thread.author.toLowerCase().includes(q)
+      thread.textResume.toLowerCase().includes(q) ||
+      thread.author.name.toLowerCase().includes(q)
     );
   });
 
-  // 2) Sort
   const sortedThreads = [...filteredThreads].sort((a, b) => {
     switch (sortBy) {
       case "most-replies":
         return b.replies - a.replies;
       case "newest":
       default:
-        return 0; // Replace with date comparison if you have real timestamps
+        return 0;
     }
   });
 
@@ -90,7 +88,7 @@ export default function ForumContent({ initialThreads }: ForumContentProps) {
         </div>
       </div>
 
-      <ThreadList threads={sortedThreads} />
+      <ThreadList initialThreads={sortedThreads} />
 
       {showNewThreadModal && (
         <NewThreadModal onClose={() => setShowNewThreadModal(false)} />

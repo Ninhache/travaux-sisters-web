@@ -1,7 +1,7 @@
-import {getAPIBaseURL} from "@/config/url";
+import { getAPIBaseURL } from "@/config/url";
 
 export interface LoginParams {
-  email: string;
+  mail: string;
   password: string;
 }
 
@@ -10,15 +10,15 @@ export interface LoginResponse {
 }
 
 export async function handleLogin({
-  email,
+  mail,
   password,
 }: LoginParams): Promise<LoginResponse> {
-  const response = await fetch(`${getAPIBaseURL()}/connect`, {
+  const response = await fetch(`${getAPIBaseURL()}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ email, pwd: password }),
+    body: JSON.stringify({ mail, pwd: password }),
   });
 
   if (!response.ok) {

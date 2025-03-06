@@ -30,8 +30,8 @@ export default function CategoryMenu({ categories }: CategoryMenuProps) {
             <span>All Categories</span>
           </Link>
         </li>
-        {categories.map((category) => (
-          <li key={category.slug}>
+        {categories.map((category, index) => (
+          <li key={index}>
             <details>
               <summary
                 className={
