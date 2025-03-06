@@ -98,10 +98,10 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
     });
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (mail: string, password: string) => {
     setLoading(true);
     try {
-      const { token } = await handleLogin({ email, password });
+      const { token } = await handleLogin({ mail, password });
       localStorage.setItem("accessToken", token);
       setSession({ token });
 
@@ -126,7 +126,6 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
     async (passedToken?: string) => {
       const authToken = passedToken ?? token;
       if (!authToken) {
-        console.warn("fetchProfile: No token available.");
         return;
       }
 
@@ -136,7 +135,6 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
         setSession({ user });
       } catch (error) {
         logout();
-        // console.error("Error fetching profile:", error);
       } finally {
         setLoading(false);
       }

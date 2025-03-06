@@ -1,5 +1,5 @@
-import { tCategory } from "@/types/forum";
 import { fetchAPI } from "@/lib/api/utils";
+import { tCategory } from "@/types/forum";
 
 export async function getCategories(): Promise<tCategory[]> {
   const response = await fetchAPI({
@@ -12,5 +12,5 @@ export async function getCategories(): Promise<tCategory[]> {
 
   const data = await response.json();
 
-  return data as tCategory[];
+  return data;
 }

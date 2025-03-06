@@ -7,7 +7,7 @@ export async function fetchAPI({
   endpoint,
   headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem(LOCAL_STORAGE_KEY)}`,
+    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
   },
 }: {
   body?: any;
@@ -21,6 +21,7 @@ export async function fetchAPI({
   requestData.headers = headers;
   if (body) {
     requestData.body = JSON.stringify(body);
+    // requestData.body = body;
   }
 
   return fetch(`${getAPIBaseURL()}${endpoint}`, requestData);

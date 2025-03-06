@@ -1,13 +1,9 @@
-import {
-  CategoryNames,
-  CategorySlugs,
-  SubcategorySlugs,
-} from "@/lib/mock-data";
+import { CategorySlugs, SubcategorySlugs } from "@/lib/mock-data";
 
 export interface tCategory {
-  name: CategoryNames;
-  slug: CategorySlugs;
-  subcategories: readonly Subcategory[];
+  id: number;
+  libelle: string;
+  categorieChildren: readonly string[];
 }
 
 export interface Subcategory {
@@ -15,16 +11,16 @@ export interface Subcategory {
   slug: string;
 }
 
-export interface Thread {
-  id: string;
-  title: string;
-  author: string;
-  date: string;
-  category: CategorySlugs;
-  subcategory: SubcategorySlugs;
-  replies: number;
-  text: string;
-}
+// export interface Thread {
+//   id: string;
+//   title: string;
+//   author: string;
+//   date: string;
+//   category: CategorySlugs;
+//   subcategory: SubcategorySlugs;
+//   replies: number;
+//   text: string;
+// }
 
 export interface ThreadComment {
   id: string;
@@ -35,4 +31,9 @@ export interface ThreadComment {
   likes: number;
 }
 
-export type Category = never;
+export type Comment = {
+  id: string;
+  author: string;
+  text: string;
+  date: string;
+};

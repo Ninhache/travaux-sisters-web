@@ -1,17 +1,175 @@
-import { getCategoryGradient } from "@/lib/badget-color";
-import type { Thread } from "@/types/forum";
-import { Calendar, MessageSquare, User } from "lucide-react";
-import Link from "next/link";
+"use client";
 
-interface ThreadListProps {
-  threads: Thread[];
+import { useSession } from "@/context/session-context";
+import { getThreads, postCommentsOnMessageId, Thread } from "@/lib/api/forum";
+import {
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  MessageSquare,
+  Send,
+  User,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+
+interface ComponentThread {
+  id: string;
+  title: string;
+  text: string;
+  replies: number;
+  author: string;
+  date: string;
+  category: string;
+  subcategory: string;
 }
 
-export default function ThreadList({ threads }: ThreadListProps) {
+interface ComponentComment {
+  id: number;
+  author: string;
+  text: string;
+  date: string;
+}
+
+interface ThreadListProps {
+  initialThreads?: Thread[];
+  categoryId?: number;
+}
+
+export default function ThreadList({
+  initialThreads,
+  categoryId,
+}: ThreadListProps) {
+  const [threads, setThreads] = useState<Thread[]>(initialThreads || []);
+  const [expandedThreads, setExpandedThreads] = useState<
+    Record<string, boolean>
+  >({});
+  const [commentInputs, setCommentInputs] = useState<Record<string, string>>(
+    {},
+  );
+  const [threadComments, setThreadComments] = useState<
+    Record<string, ComponentComment[]>
+  >({});
+  const [loading, setLoading] = useState<boolean>(!initialThreads);
+  const [commentLoading, setCommentLoading] = useState<Record<string, boolean>>(
+    {},
+  );
+  const { token } = useSession();
+
+  // Fetch threads on component mount if not provided
+  useEffect(() => {
+    if (!initialThreads) {
+      fetchThreads();
+    }
+  }, [initialThreads, categoryId]);
+
+  const fetchThreads = async () => {
+    try {
+      setLoading(true);
+      const apiThreads = await getThreads({ categorieId: categoryId });
+
+      // Map API threads to component threads
+      // const mappedThreads = apiThreads.map((thread: Thread) => ({
+      //   id: thread.title.toLowerCase().replace(/\s+/g, "-"),
+      //   title: thread.title,
+      //   text: thread.textResume,
+      //   replies: thread.replies,
+      //   author: thread.author.name,
+      //   date: thread.date,
+      //   category: thread.categorie.libelle,
+      //   subcategory:
+      //     thread.categorie.categorieChildren?.[0]?.libelle ||
+      //     thread.categorie.libelle,
+      // }));
+
+      setThreads(apiThreads);
+    } catch (error) {
+      console.error("Failed to fetch threads:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleThread = async (threadId: number) => {
+    const isExpanding = !expandedThreads[threadId];
+
+    setExpandedThreads((prev) => ({
+      ...prev,
+      [threadId]: isExpanding,
+    }));
+
+    if (isExpanding && !threadComments[threadId]) {
+      fetchComments(threadId);
+    }
+  };
+
+  const fetchComments = async (threadId: number) => {
+    // todo
+    setThreadComments((prev) => ({
+      ...prev,
+      [threadId]: [],
+    }));
+  };
+
+  const handleCommentInputChange = (threadId: number, value: string) => {
+    setCommentInputs((prev) => ({
+      ...prev,
+      [threadId]: value,
+    }));
+  };
+
+  const handleSubmitComment = async (threadId: number) => {
+    if (!commentInputs[threadId]?.trim()) return;
+
+    try {
+      setCommentLoading((prev) => ({ ...prev, [threadId]: true }));
+
+      if (!token) {
+        alert("You must be logged in to comment");
+        return;
+      }
+
+      const response = await postCommentsOnMessageId({
+        token,
+        messageId: threadId,
+        contenu: commentInputs[threadId],
+      });
+
+      const newComment: ComponentComment = {
+        id: response.id,
+        author: response.user.username,
+        text: response.contenu,
+        date: response.date,
+      };
+
+      setThreadComments((prev) => ({
+        ...prev,
+        [threadId]: [...(prev[threadId] || []), newComment],
+      }));
+
+      setCommentInputs((prev) => ({
+        ...prev,
+        [threadId]: "",
+      }));
+    } catch (error) {
+      console.error("Failed to submit comment:", error);
+      alert("Failed to submit comment. Please try again.");
+    } finally {
+      setCommentLoading((prev) => ({ ...prev, [threadId]: false }));
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-base-100 rounded-box p-8 text-center shadow-sm">
+        <h3 className="mb-2 text-lg font-medium">Loading threads...</h3>
+      </div>
+    );
+  }
+
   if (threads.length === 0) {
     return (
       <div className="bg-base-100 rounded-box p-8 text-center shadow-sm">
-        <h3 className="text-lg font-medium mb-2">No threads found</h3>
+        <h3 className="mb-2 text-lg font-medium">No threads found</h3>
         <p className="text-base-content/70">
           Try adjusting your search or filter to find what you're looking for.
         </p>
@@ -21,56 +179,149 @@ export default function ThreadList({ threads }: ThreadListProps) {
 
   return (
     <div className="space-y-4">
-      {threads.map((thread) => (
-        <ThreadCard key={thread.id} thread={thread} />
+      {threads.map((thread, index) => (
+        <ThreadCard
+          key={`thread-${index}`}
+          thread={thread}
+          isExpanded={!!expandedThreads[thread.id]}
+          toggleExpand={() => toggleThread(thread.id)}
+          comments={threadComments[thread.id] || []}
+          commentInput={commentInputs[thread.id] || ""}
+          onCommentInputChange={(value) =>
+            handleCommentInputChange(thread.id, value)
+          }
+          onSubmitComment={() => handleSubmitComment(thread.id)}
+          isCommentLoading={commentLoading[thread.id] || false}
+        />
       ))}
     </div>
   );
 }
 
-function ThreadCard({ thread }: { thread: Thread }) {
+interface ThreadCardProps {
+  thread: Thread;
+  isExpanded: boolean;
+  toggleExpand: () => void;
+  comments: ComponentComment[];
+  commentInput: string;
+  onCommentInputChange: (value: string) => void;
+  onSubmitComment: () => void;
+  isCommentLoading: boolean;
+}
+
+function ThreadCard({
+  thread,
+  isExpanded,
+  toggleExpand,
+  comments,
+  commentInput,
+  onCommentInputChange,
+  onSubmitComment,
+  isCommentLoading,
+}: ThreadCardProps) {
   return (
-    <div className="card bg-base-100 shadow-sm hover:shadow transition-shadow">
-      <Link
-        href={`/forum/${thread.category}/${thread.subcategory}/${thread.id}`}
-        className="card-body p-4 sm:p-6"
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <span className="card-title text-lg sm:text-xl hover:text-primary transition-colors">
-            {thread.title}
-          </span>
-          {/* <Link
-            href={`/forum/${thread.category}/${thread.subcategory}/${thread.id}`}
-            className="card-title text-lg sm:text-xl hover:text-primary transition-colors"
-          >
-            {thread.title}
-          </Link> */}
-          <div
-            className="badge badge-outline capitalize font-bold text-white"
-            style={getCategoryGradient(thread.category, thread.subcategory)}
-          >
-            {/* {thread.category} */}
-            {thread.subcategory}
+    <div className="card bg-base-100 shadow-sm transition-shadow hover:shadow">
+      <div className="card-body p-4 sm:p-6">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <span className="card-title hover:text-primary text-lg transition-colors sm:text-xl">
+              {thread.title}
+            </span>
+            {/* <div
+              className="badge badge-outline font-bold text-white capitalize"
+              // style={getCategoryGradient(thread.category, thread.subcategory)}
+            >
+              {thread.categorie.map((i) => i.libelle).join(",")}
+            </div> */}
           </div>
+
+          <p className="text-base-content/80 mt-2 line-clamp-2">
+            {thread.textResume}
+          </p>
         </div>
 
-        <p className="mt-2 text-base-content/80 line-clamp-2">{thread.text}</p>
+        <div className="text-base-content/60 mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              <User className="h-4 w-4" />
+              <span>{thread.author.name}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Calendar className="h-4 w-4" />
+              <span>{thread.date}</span>
+            </div>
+          </div>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-base-content/60">
-          <div className="flex items-center gap-1">
-            <User className="h-4 w-4" />
-            <span>{thread.author}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Calendar className="h-4 w-4" />
-            <span>{thread.date}</span>
-          </div>
-          <div className="flex items-center gap-1">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              toggleExpand();
+            }}
+            className="hover:text-primary flex items-center gap-1 transition-colors"
+          >
             <MessageSquare className="h-4 w-4" />
             <span>{thread.replies} replies</span>
-          </div>
+            {isExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
         </div>
-      </Link>
+
+        {/* Comments section */}
+        {isExpanded && (
+          <div className="mt-4 border-t pt-4">
+            <div className="space-y-3">
+              {comments.length > 0 ? (
+                comments.map((comment) => (
+                  <div key={comment.id} className="bg-base-200 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="font-medium">{comment.author}</div>
+                      <div className="text-base-content/60 text-xs">
+                        {comment.date}
+                      </div>
+                    </div>
+                    <p className="mt-1 text-sm">{comment.text}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-base-content/60 text-center text-sm">
+                  No comments yet. Be the first to comment!
+                </p>
+              )}
+            </div>
+
+            {/* Add comment form */}
+            <div className="mt-4 flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Add a comment..."
+                className="input input-bordered flex-grow text-sm"
+                value={commentInput}
+                onChange={(e) => onCommentInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && commentInput.trim()) {
+                    onSubmitComment();
+                  }
+                }}
+                disabled={isCommentLoading}
+              />
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={onSubmitComment}
+                disabled={!commentInput.trim() || isCommentLoading}
+              >
+                {isCommentLoading ? (
+                  <span className="loading loading-spinner loading-xs"></span>
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -4,15 +4,16 @@ import type React from "react";
 
 import { useSession } from "@/context/session-context";
 import {
+  deleteDevisById,
   type Devis,
   getDevis,
+  uploadDevis,
 } from "@/lib/api/devis";
 import {
   CheckCircleIcon,
   EyeIcon,
   FileIcon,
   TrashIcon,
-  UploadIcon,
   XCircleIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -80,9 +81,8 @@ export default function FileUploadSection() {
     setUploadStatus({ type: null, message: "" });
 
     try {
-      // @ts-ignore
+      if (!token) return;
       const newDevis = await uploadDevis(file, token);
-      // const  newDevis = await uploadDevis(file);
       setUploadedFiles((prev) => [newDevis, ...prev]);
       setFile(null);
       setUploadStatus({
@@ -111,7 +111,7 @@ export default function FileUploadSection() {
     }
 
     try {
-      // @ts-ignore
+      if (!token) return;
       await deleteDevisById(id, token);
       setUploadedFiles((prev) => prev.filter((file) => file.id !== id));
     } catch (error) {

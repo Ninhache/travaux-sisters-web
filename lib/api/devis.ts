@@ -1,5 +1,6 @@
-import { GlossaryEntry } from "@/types/devis";
+import { getAPIBaseURL } from "@/config/url";
 import { fetchAPI } from "@/lib/api/utils";
+import { GlossaryEntry } from "@/types/devis";
 
 export type Devis = {
   id: number;
@@ -23,7 +24,6 @@ export async function getDevisById(id: string, token: string): Promise<Devis> {
   const response = await fetchAPI({
     endpoint: `/devis/${id}?vue=inf`,
   });
-
 
   if (!response.ok) {
     throw new Error("Failed to fetch devis");
@@ -77,10 +77,12 @@ export async function uploadDevis(file: File, token: string): Promise<Devis> {
   const formData = new FormData();
   formData.append("devis", file);
 
-  const response = await fetchAPI({
-    endpoint: "/devis",
+  const response = await fetch(`${getAPIBaseURL()}/devis`, {
     method: "POST",
     body: formData,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (!response.ok) {

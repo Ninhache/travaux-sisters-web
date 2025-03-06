@@ -1,7 +1,7 @@
-import { fetchAPI } from "@/lib/api/utils";
+import { fetchAPI } from "./utils";
 
 export interface LoginParams {
-  email: string;
+  mail: string;
   password: string;
 }
 
@@ -10,14 +10,14 @@ export interface LoginResponse {
 }
 
 export async function handleLogin({
-  email,
+  mail,
   password,
 }: LoginParams): Promise<LoginResponse> {
   const response = await fetchAPI({
     endpoint: "/users/login",
     method: "POST",
     body: {
-      mail: email,
+      mail: mail,
       pwd: password,
     },
   });
