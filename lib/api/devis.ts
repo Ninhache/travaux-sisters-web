@@ -22,7 +22,7 @@ export async function getDevis(token: string): Promise<Devis[]> {
 
 export async function getDevisById(id: string, token: string): Promise<Devis> {
   const response = await fetchAPI({
-    endpoint: `/devis/${id}?vue=info`,
+    endpoint: `/devis/${id}?vue=inf`,
   });
 
   if (!response.ok) {
@@ -48,7 +48,7 @@ export async function deleteDevisById(id: number, token: string) {
 export async function getPDFById(id: string, token: string): Promise<string> {
   const response = await fetch(`${getAPIBaseURL()}/devis/${id}?vue=pdf`, {
     headers: {
-      Authorization: `${token}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 
@@ -68,7 +68,7 @@ export async function getGlossaryById(
 ): Promise<GlossaryEntry[]> {
   const response = await fetch(`${getAPIBaseURL()}/devis/${id}?vue=glo`, {
     headers: {
-      Authorization: `${token}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 
