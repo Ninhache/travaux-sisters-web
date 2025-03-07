@@ -10,6 +10,9 @@
   --color-base-100: oklch(96.2% 0.003 0 / 95.2%);
   --color-base-200: oklch(97% 0.017 320.058);
   --color-base-300: oklch(94% 0.028 342.258);
+
+  --color-footer-1: oklch(34.6% 0.092 328.5);
+  --color-footer-2: oklch(32.4% 0.119 307.8);
   --color-base-content: oklch(21% 0.006 56.043);
   --color-primary: #df00a9;
   --color-primary-content: oklch(96% 0.015 12.422);
@@ -35,4 +38,12 @@
   --border: 1px;
   --depth: 0;
   --noise: 0;
+}
+
+.bg-footer-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--color-footer-1),
+    var(--color-footer-2)
+  );
 }

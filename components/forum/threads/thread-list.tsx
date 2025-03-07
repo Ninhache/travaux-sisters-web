@@ -118,11 +118,11 @@ export default function ThreadList({
         contenu: commentInputs[threadId],
       });
 
-      const comments = await getCommentsByMessageId({ messageId: threadId });
+      const message = await getCommentsByMessageId({ messageId: threadId });
 
       setThreadComments((prev) => ({
         ...prev,
-        [threadId]: [...(prev[threadId] || []), comments],
+        [threadId]: message.commentaires,
       }));
 
       setCommentInputs((prev) => ({
@@ -202,15 +202,6 @@ function ThreadCard({
 }: ThreadCardProps) {
   const { user, token, isConnected } = useSession();
 
-  const handleEdit = (
-    e: MouseEvent<HTMLAnchorElement>,
-    id: string | number,
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log("Edit thread:", id);
-  };
-
   const handleDelete = (e: MouseEvent<HTMLAnchorElement>, id: number) => {
     e.preventDefault();
     e.stopPropagation();
@@ -268,12 +259,6 @@ function ThreadCard({
                       tabIndex={0}
                       className="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow"
                     >
-                      <li>
-                        <a onClick={(e) => handleEdit(e, thread.id)}>
-                          <Edit2 className="h-4 w-4" />
-                          Edit
-                        </a>
-                      </li>
                       <li>
                         <a
                           onClick={(e) => handleDelete(e, thread.id)}

@@ -116,10 +116,10 @@ export default function FileViewPage({ params }: ParamsProps<{ id: string }>) {
                   </div>
                 </div>
 
-                <button className="btn btn-primary mt-2 w-full sm:mt-0 sm:w-auto">
+                {/* <button className="btn btn-primary mt-2 w-full sm:mt-0 sm:w-auto">
                   <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Télécharger
-                </button>
+                </button> */}
               </div>
             </div>
 
