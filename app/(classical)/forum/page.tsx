@@ -5,6 +5,7 @@ import { Suspense } from "react";
 
 export default async function ForumPage() {
   const initialThreads = await getThreads({});
+  const categories = await getCategories();
 
   return (
     <Suspense
@@ -12,7 +13,7 @@ export default async function ForumPage() {
         <div className="w-full p-8 text-center">Loading forum content...</div>
       }
     >
-      <ForumContent initialThreads={initialThreads} />
+      <ForumContent categories={categories} initialThreads={initialThreads} />
     </Suspense>
   );
 }
