@@ -31,13 +31,29 @@ export default function ({ id }: PDFProps) {
   console.log(glossary)
   return (
     <>
-      {Object.entries(glossary).map( ([_, v]) => (
-        <>
-          <p>
-            {v.matching} : {v.dictEntry.definition}
-          </p>
-        </>
+      <p className="font-bold text-xl mb-2"> Glossaire du fichier : </p>
+      {Object.entries(glossary).map( ([_, v], index) => (
+        
+          <div>
+            <strong style={{textTransform: "capitalize"}}>{v.dictEntry.word} : </strong> {v.dictEntry.definition}
+          </div>
+        
       ))}
     </>
   );
 }
+
+/*
+{ <marquee
+  direction="down"
+  // width="250"
+  height="50"
+  behavior="alternate"
+  scrollamount={index % 2 === 0 ? 6:12}
+  // style={{border: "solid"}}
+  
+  className="border-2 border-primary "
+  >
+  <marquee behavior="alternate">{v.dictEntry.word}</marquee>
+</marquee>}
+*/
