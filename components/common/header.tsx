@@ -160,7 +160,7 @@ export default function Header({ navConfig = defaultNavConfig }: HeaderProps) {
                     ) : (
                       <div
                         className="tooltip tooltip-bottom"
-                        data-tip="You need to be connected to access this link"
+                        data-tip="Il faut être connecté pour acceder à ce lien"
                       >
                         <span className="text-primary/25 cursor-not-allowed rounded-md px-3 py-2 text-sm font-medium">
                           {link.label}

@@ -177,7 +177,7 @@ export async function deleteMessageById({
   token,
 
   messageId,
-}: DeleteMessageByIdParams): Promise<Comment> {
+}: DeleteMessageByIdParams): Promise<boolean> {
   let url = `${getAPIBaseURL()}/message/${messageId}`;
 
   const response = await fetch(url, {
@@ -188,8 +188,46 @@ export async function deleteMessageById({
     },
   });
 
+  return response.ok;
+}
+
+interface DeleteCommentByIdParams extends AuthenticationRequest {
+  messageId: number;
+  commentId: number;
+}
+export async function deleteCommentById({
+  token,
+
+  messageId,
+  commentId,
+}: DeleteCommentByIdParams): Promise<boolean> {
+  let url = `${getAPIBaseURL()}/message/${messageId}/commentary/${commentId}`;
+
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.ok;
+}
+
+interface getCommentsByMessageId {
+  messageId: number;
+}
+export async function getCommentsByMessageId({
+  messageId,
+}: getCommentsByMessageId): Promise<Thread & { commentaires: Comment[] }> {
+  let url = `${getAPIBaseURL()}/message/${messageId}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+  });
+
   if (!response.ok) {
-    throw new Error("Failed to delete threads");
+    throw new Error("Failed to get comments from threads");
   }
 
   return response.json();

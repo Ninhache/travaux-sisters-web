@@ -32,13 +32,12 @@ export default function CategoryMenu({ categories }: CategoryMenuProps) {
             <Link
               href={`/forum/${category.slug}`}
               className={
-                // pathname.startsWith(`/forum/${category.id}`) ? "active" : ""
                 pathname === `/forum/${category.slug}`
                   ? "text-primary font-bold"
                   : ""
               }
             >
-              <span className="capitalize">{category.libelle}</span>
+              <span className="font-bold capitalize">{category.libelle}</span>
             </Link>
             {category.categorieChildren.length > 0 && (
               <ul className="ml-4 border-l border-gray-300 pl-2">
@@ -51,10 +50,6 @@ export default function CategoryMenu({ categories }: CategoryMenuProps) {
                           ? "text-primary font-bold"
                           : ""
                       }
-
-                      // className={
-                      //   pathname === `/forum/${subcategory.id}` ? "active" : ""
-                      // }
                     >
                       {subcategory.libelle}
                     </Link>
