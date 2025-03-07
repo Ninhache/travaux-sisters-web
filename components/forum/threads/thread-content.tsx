@@ -40,7 +40,7 @@ export default function ThreadContent({ thread }: ThreadContentProps) {
           // style={getCategoryGradient(thread., thread.subcategory)}
         >
           {/* {thread.category} */}
-          {thread.categorie[0].libelle}
+          {thread.categorie.libelle}
         </div>
       </div>
 
