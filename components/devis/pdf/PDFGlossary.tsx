@@ -1,3 +1,5 @@
+"use client";
+
 import { useSession } from "@/context/session-context";
 import { getGlossaryById } from "@/lib/api/devis";
 import { GlossaryEntry } from "@/types/devis";
@@ -21,39 +23,44 @@ export default function ({ id }: PDFProps) {
 
   if (!glossary) {
     return (
-      <>
-        <main className="bg-base-200 flex w-1/2 items-center justify-center p-4 md:p-8">
-          <p className="text-lg font-semibold">Chargement...</p>
-        </main>
-      </>
+      <main className="bg-base-200 flex w-1/2 items-center justify-center p-4 md:p-8">
+        <p className="text-lg font-semibold">Chargement...</p>
+      </main>
     );
   }
-  console.log(glossary)
+
+  if (glossary.length === 0) {
+    return (
+      <div className="alert alert-warning w-full shadow-lg">
+        <div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M13 16h-1v-4h-1m0-4h.01M12 2a10 10 0 1 1-10 10A10 10 0 0 1 12 2z"
+            />
+          </svg>
+          <span>Aucun terme trouvé dans le glossaire.</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <p className="font-bold text-xl mb-2"> Glossaire du fichier : </p>
-      {Object.entries(glossary).map( ([_, v], index) => (
-        
-          <div>
-            <strong style={{textTransform: "capitalize"}}>{v.dictEntry.word} : </strong> {v.dictEntry.definition}
-          </div>
-        
+      <p className="mb-2 text-xl font-bold">Glossaire du fichier :</p>
+      {glossary.map((entry, index) => (
+        <div key={index} className="border-base-300 border-b p-2">
+          <strong className="capitalize">{entry.dictEntry.word} :</strong>
+          <span> {entry.dictEntry.definition}</span>
+        </div>
       ))}
     </>
   );
 }
-
-/*
-{ <marquee
-  direction="down"
-  // width="250"
-  height="50"
-  behavior="alternate"
-  scrollamount={index % 2 === 0 ? 6:12}
-  // style={{border: "solid"}}
-  
-  className="border-2 border-primary "
-  >
-  <marquee behavior="alternate">{v.dictEntry.word}</marquee>
-</marquee>}
-*/

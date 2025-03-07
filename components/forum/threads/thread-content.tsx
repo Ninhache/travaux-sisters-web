@@ -55,7 +55,7 @@ export default function ThreadContent({ thread }: ThreadContentProps) {
         </div>
         <div className="flex items-center gap-1">
           <MessageSquare className="h-4 w-4" />
-          <span>{thread.replies} replies</span>
+          <span>{thread.replies} réponses</span>
         </div>
       </div>
 

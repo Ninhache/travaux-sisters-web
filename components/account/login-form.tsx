@@ -58,7 +58,7 @@ export default function LoginForm() {
           <div className="form-control w-full">
             <div className="flex items-center justify-between">
               <label className="label">
-                <span className="label-text">Password</span>
+                <span className="label-text">Mot de passe</span>
               </label>
               <Link
                 href="#"

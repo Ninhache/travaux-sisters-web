@@ -135,11 +135,13 @@ export default function NewThreadModal({
           <X className="h-5 w-5" />
         </button>
 
-        <h2 className="mb-6 text-xl font-bold">Create New Thread</h2>
+        <h2 className="mb-6 text-xl font-bold">
+          Créer un nouveau fil de discussion
+        </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="title" className="mb-2 block font-medium">
-              Title
+              Titre
             </label>
             <input
               type="text"
@@ -147,7 +149,7 @@ export default function NewThreadModal({
               className="input input-bordered w-full"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter thread title"
+              placeholder="J'ai besoin d'aide!"
               required
             />
           </div>
@@ -216,7 +218,7 @@ export default function NewThreadModal({
                   }}
                 >
                   <Search className="mr-2 h-5 w-5" />
-                  Select a category
+                  Selectionner une catégorie
                 </button>
               )}
             </div>
@@ -231,7 +233,7 @@ export default function NewThreadModal({
               className="textarea textarea-bordered h-40 w-full"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your thread content here..."
+              placeholder="Besoin d'une idée de description ..."
               required
             />
           </div>

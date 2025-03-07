@@ -302,7 +302,7 @@ function ThreadCard({
             className="hover:text-primary flex items-center gap-1 transition-colors"
           >
             <MessageSquare className="h-4 w-4" />
-            <span>{thread.replies} replies</span>
+            <span>{thread.replies} réponses</span>
             {isExpanded ? (
               <ChevronUp className="h-4 w-4" />
             ) : (
@@ -324,7 +324,7 @@ function ThreadCard({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="avatar">
-                          <div className="h-6 w-6 rounded-full">
+                          <div className="ring-primary ring-offset-base-100 h-6 w-6 rounded-full ring ring-offset-2">
                             <Image
                               src={`/profile/${comment.liteAuthor.idPicture}.webp`}
                               alt="User Avatar"
@@ -381,7 +381,7 @@ function ThreadCard({
               <div className="mt-4 flex items-center gap-2">
                 <input
                   type="text"
-                  placeholder="Add a comment..."
+                  placeholder="Ajouter un commentaire..."
                   className="input input-bordered flex-grow text-sm"
                   value={commentInput}
                   onChange={(e) => onCommentInputChange(e.target.value)}
@@ -412,7 +412,7 @@ function ThreadCard({
                 <div className="mt-4 flex items-center gap-2">
                   <input
                     type="text"
-                    placeholder="Add a comment..."
+                    placeholder="Ajouter un commentaire..."
                     className="input input-bordered flex-grow text-sm"
                     disabled={true}
                   />

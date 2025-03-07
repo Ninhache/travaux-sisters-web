@@ -104,7 +104,7 @@ export default function FileUploadSection() {
       console.error("Upload error:", error);
       setUploadStatus({
         type: "error",
-        message: "Failed to upload file. Please try again.",
+        message: "Impossible de télécharger le fichier. Veuillez réessayer.",
       });
     } finally {
       setUploading(false);
