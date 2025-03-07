@@ -17,6 +17,7 @@ export type Thread = {
 export type Category = {
   id: number;
   libelle: string;
+  slug: string;
   categorieChildren: Category[];
 };
 

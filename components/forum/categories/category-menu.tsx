@@ -30,10 +30,10 @@ export default function CategoryMenu({ categories }: CategoryMenuProps) {
         {categories.map((category) => (
           <li key={category.id}>
             <Link
-              href={`/forum/${category.id}`}
+              href={`/forum/${category.slug}`}
               className={
                 // pathname.startsWith(`/forum/${category.id}`) ? "active" : ""
-                pathname === `/forum/${category.id}`
+                pathname === `/forum/${category.slug}`
                   ? "text-primary font-bold"
                   : ""
               }
@@ -45,9 +45,9 @@ export default function CategoryMenu({ categories }: CategoryMenuProps) {
                 {category.categorieChildren.map((subcategory) => (
                   <li key={subcategory.id}>
                     <Link
-                      href={`/forum/${subcategory.id}`}
+                      href={`/forum/${subcategory.slug}`}
                       className={
-                        pathname === `/forum/${subcategory.id}`
+                        pathname === `/forum/${subcategory.slug}`
                           ? "text-primary font-bold"
                           : ""
                       }

@@ -1,28 +1,37 @@
 import ForumContent from "@/components/forum/threads/forum-content";
+import { getAPIBaseURL } from "@/config/url";
+import { getCategories } from "@/lib/api/category";
 import { getThreads } from "@/lib/api/forum";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ParamsProps } from "../../devis/[id]/page";
-import { getCategories } from "@/lib/api/category";
 
 interface CategoryPageProps {
-  categoryId: string;
+  categorySlug: string;
+}
+
+async function getCategoryBySlug(slug: string) {
+  const res = await fetch(`${getAPIBaseURL()}/categorie/${slug}`);
+  if (!res.ok) throw new Error("Failed to fetch category");
+  return res.json();
 }
 
 export default async function CategoryPage({
   params,
 }: ParamsProps<CategoryPageProps>) {
-  const { categoryId } = await params;
+  const { categorySlug } = await params;
 
-  if (!categoryId) {
+  if (!categorySlug) {
     notFound();
   }
 
-  const categorieId = parseInt(categoryId, 10);
+  const category = await getCategoryBySlug(categorySlug);
 
-  if (isNaN(categorieId)) {
-    throw Error("`categorieId` must be a number");
+  if (!category) {
+    notFound();
   }
+
+  const { id: categorieId } = category;
 
   const filteredThreads = await getThreads({ categorieId });
   const categories = await getCategories();
