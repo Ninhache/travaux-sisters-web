@@ -15,7 +15,7 @@ export default function CommentSection({
   threadId,
 }: CommentSectionProps) {
   const [newComment, setNewComment] = useState("");
-  const [localComments, setLocalComments] = useState<Comment[]>(comments);
+  // const [localComments, setLocalComments] = useState<Comment[]>(comments);
 
   const { token } = useSession();
 

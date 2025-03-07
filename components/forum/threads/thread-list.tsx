@@ -3,7 +3,9 @@
 import { useSession } from "@/context/session-context";
 import {
   Comment,
+  deleteCommentById,
   deleteMessageById,
+  getCommentsByMessageId,
   getThreads,
   postCommentsOnMessageId,
   Thread,
@@ -47,9 +49,10 @@ export default function ThreadList({
   );
   const { token } = useSession();
 
-  // Fetch threads on component mount if not provided
   useEffect(() => {
-    if (!initialThreads) {
+    if (initialThreads) {
+      setThreads(initialThreads);
+    } else {
       fetchThreads();
     }
   }, [initialThreads, categoryId]);
@@ -81,10 +84,13 @@ export default function ThreadList({
   };
 
   const fetchComments = async (threadId: number) => {
-    // todo
+    const comments = await getCommentsByMessageId({ messageId: threadId });
+
+    const { commentaires } = comments;
+
     setThreadComments((prev) => ({
       ...prev,
-      [threadId]: [],
+      [threadId]: commentaires,
     }));
   };
 
@@ -106,22 +112,17 @@ export default function ThreadList({
         return;
       }
 
-      const response = await postCommentsOnMessageId({
+      await postCommentsOnMessageId({
         token,
         messageId: threadId,
         contenu: commentInputs[threadId],
       });
 
-      const newComment: Comment = {
-        id: response.id,
-        liteAuthor: response.liteAuthor,
-        contenu: response.contenu,
-        date: response.date,
-      };
+      const comments = await getCommentsByMessageId({ messageId: threadId });
 
       setThreadComments((prev) => ({
         ...prev,
-        [threadId]: [...(prev[threadId] || []), newComment],
+        [threadId]: [...(prev[threadId] || []), comments],
       }));
 
       setCommentInputs((prev) => ({
@@ -157,21 +158,23 @@ export default function ThreadList({
 
   return (
     <div className="space-y-4">
-      {threads.map((thread, index) => (
-        <ThreadCard
-          key={`thread-${index}`}
-          thread={thread}
-          isExpanded={!!expandedThreads[thread.id]}
-          toggleExpand={() => toggleThread(thread.id)}
-          comments={threadComments[thread.id] || []}
-          commentInput={commentInputs[thread.id] || ""}
-          onCommentInputChange={(value) =>
-            handleCommentInputChange(thread.id, value)
-          }
-          onSubmitComment={() => handleSubmitComment(thread.id)}
-          isCommentLoading={commentLoading[thread.id] || false}
-        />
-      ))}
+      {threads
+        .sort((a, b) => b.id - a.id)
+        .map((thread, index) => (
+          <ThreadCard
+            key={`thread-${index}`}
+            thread={thread}
+            isExpanded={!!expandedThreads[thread.id]}
+            toggleExpand={() => toggleThread(thread.id)}
+            comments={threadComments[thread.id] || []}
+            commentInput={commentInputs[thread.id] || ""}
+            onCommentInputChange={(value) =>
+              handleCommentInputChange(thread.id, value)
+            }
+            onSubmitComment={() => handleSubmitComment(thread.id)}
+            isCommentLoading={commentLoading[thread.id] || false}
+          />
+        ))}
     </div>
   );
 }
@@ -197,7 +200,7 @@ function ThreadCard({
   onSubmitComment,
   isCommentLoading,
 }: ThreadCardProps) {
-  const { user, token } = useSession();
+  const { user, token, isConnected } = useSession();
 
   const handleEdit = (
     e: MouseEvent<HTMLAnchorElement>,
@@ -353,32 +356,29 @@ function ThreadCard({
                       <div className="text-base-content/60 flex items-center gap-2 text-xs">
                         {comment.date}
 
-                        <div className="inline-flex">
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              console.log("Edit comment:", comment.id);
-                            }}
-                            className="btn btn-ghost btn-xs btn-circle"
-                            data-tip="Edit"
-                          >
-                            <Edit2 className="h-3 w-3" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (confirm("Delete this comment?")) {
-                                console.log("Delete comment:", comment.id);
-                              }
-                            }}
-                            className="btn btn-ghost btn-xs btn-circle text-error"
-                            data-tip="Delete"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        </div>
+                        {user?.username === comment.liteAuthor.name && (
+                          <div className="inline-flex">
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (confirm("Delete this comment?")) {
+                                  console.log("Delete comment:", comment.id);
+                                  if (!token) return;
+                                  deleteCommentById({
+                                    token,
+                                    commentId: comment.id,
+                                    messageId: thread.id,
+                                  });
+                                }
+                              }}
+                              className="btn btn-ghost btn-xs btn-circle text-error"
+                              data-tip="Delete"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <p className="mt-1 text-sm">{comment.contenu}</p>
@@ -392,32 +392,51 @@ function ThreadCard({
             </div>
 
             {/* Add comment form */}
-            <div className="mt-4 flex items-center gap-2">
-              <input
-                type="text"
-                placeholder="Add a comment..."
-                className="input input-bordered flex-grow text-sm"
-                value={commentInput}
-                onChange={(e) => onCommentInputChange(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && commentInput.trim()) {
-                    onSubmitComment();
-                  }
-                }}
-                disabled={isCommentLoading}
-              />
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={onSubmitComment}
-                disabled={!commentInput.trim() || isCommentLoading}
+            {isConnected ? (
+              <div className="mt-4 flex items-center gap-2">
+                <input
+                  type="text"
+                  placeholder="Add a comment..."
+                  className="input input-bordered flex-grow text-sm"
+                  value={commentInput}
+                  onChange={(e) => onCommentInputChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && commentInput.trim()) {
+                      onSubmitComment();
+                    }
+                  }}
+                  disabled={isCommentLoading}
+                />
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={onSubmitComment}
+                  disabled={!commentInput.trim() || isCommentLoading}
+                >
+                  {isCommentLoading ? (
+                    <span className="loading loading-spinner loading-xs"></span>
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            ) : (
+              <div
+                className="tooltip tooltip-bottom w-full"
+                data-tip="Il faut vous connecter pour commenter ce message"
               >
-                {isCommentLoading ? (
-                  <span className="loading loading-spinner loading-xs"></span>
-                ) : (
-                  <Send className="h-4 w-4" />
-                )}
-              </button>
-            </div>
+                <div className="mt-4 flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Add a comment..."
+                    className="input input-bordered flex-grow text-sm"
+                    disabled={true}
+                  />
+                  <button className="btn btn-primary btn-sm" disabled={true}>
+                    <Send className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -2,17 +2,20 @@
 
 import { useSession } from "@/context/session-context";
 import { createThreads, type Category } from "@/lib/api/forum";
+import { damerauLevenshteinDistance } from "@/lib/math";
 import { Search, X } from "lucide-react";
-import { type FormEvent, useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 interface NewThreadModalProps {
   categories: Category[];
   onClose: () => void;
+  onThreadCreated?: () => void;
 }
 
 export default function NewThreadModal({
   categories,
   onClose,
+  onThreadCreated,
 }: NewThreadModalProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -25,7 +28,6 @@ export default function NewThreadModal({
   const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   const { token } = useSession();
-
   const modalRef = useRef<HTMLDivElement>(null);
 
   const flattenedCategories = useMemo(
@@ -70,7 +72,6 @@ export default function NewThreadModal({
       .map((cat) => {
         const catSlug = slugify(cat.libelle);
         const distance = damerauLevenshteinDistance(searchSlug, catSlug);
-
         const normalizedDistance = distance / Math.max(catSlug.length, 1);
 
         return {
@@ -78,30 +79,25 @@ export default function NewThreadModal({
           normalizedDistance,
         };
       })
-
       .filter(({ cat: { libelle }, normalizedDistance }) => {
         return normalizedDistance <= 0.7 || libelle.includes(searchSlug);
       })
-
       .sort(
         (a, b) =>
           a.normalizedDistance - b.normalizedDistance ||
           a.cat.libelle.localeCompare(b.cat.libelle),
       )
-
       .map(({ cat }) => cat);
 
     setFilteredCategories(results);
   }, [categorySearch, flattenedCategories]);
 
   const handleSubmit = async (e: FormEvent) => {
-    console.log("coucou coco");
     e.preventDefault();
 
     if (!title.trim() || !content.trim() || !selectedCategory || !token) {
       return;
     }
-    console.log("bite");
 
     setIsSubmitting(true);
     try {
@@ -112,6 +108,12 @@ export default function NewThreadModal({
         contenu: content.trim(),
       });
 
+      // Once the creation is done, we call the parent's callback:
+      if (onThreadCreated) {
+        onThreadCreated();
+      }
+
+      // Then close the modal
       onClose();
     } catch (error) {
       console.error("Failed to create thread:", error);
@@ -247,7 +249,6 @@ export default function NewThreadModal({
               type="submit"
               className="btn btn-primary"
               disabled={isSubmitting || !title || !content || !selectedCategory}
-              onClick={handleSubmit}
             >
               {isSubmitting ? "Creating..." : "Create Thread"}
             </button>
@@ -258,10 +259,6 @@ export default function NewThreadModal({
   );
 }
 
-/**
- * Flatten nested categories into a simple array
- * ignoring hierarchy for the search
- */
 function flattenCategories(categories: Category[]): Category[] {
   return categories.flatMap((cat) => [
     cat,
@@ -269,10 +266,6 @@ function flattenCategories(categories: Category[]): Category[] {
   ]);
 }
 
-/**
- * (Optional) Convert string to a "slug" that removes diacritics, punctuation, etc.
- * This helps avoid issues with special characters when computing distance.
- */
 function slugify(text: string): string {
   return text
     .normalize("NFD")
@@ -280,34 +273,4 @@ function slugify(text: string): string {
     .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
-}
-
-function damerauLevenshteinDistance(a: string, b: string): number {
-  if (a === b) return 0;
-  if (!a.length) return b.length;
-  if (!b.length) return a.length;
-
-  const d: number[][] = [];
-  for (let i = 0; i <= a.length; i++) {
-    d[i] = [i];
-  }
-  for (let j = 0; j <= b.length; j++) {
-    d[0][j] = j;
-  }
-
-  for (let i = 1; i <= a.length; i++) {
-    for (let j = 1; j <= b.length; j++) {
-      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      d[i][j] = Math.min(
-        d[i - 1][j] + 1,
-        d[i][j - 1] + 1,
-        d[i - 1][j - 1] + cost,
-      );
-
-      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
-        d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + cost);
-      }
-    }
-  }
-  return d[a.length][b.length];
 }
