@@ -1,11 +1,9 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
-import { ThumbsUp } from "lucide-react";
-import { Comment, postCommentsOnMessageId } from "@/lib/api/forum";
 import { useSession } from "@/context/session-context";
+import { Comment } from "@/lib/api/forum";
+import { ThumbsUp } from "lucide-react";
+import { useState } from "react";
 
 interface CommentSectionProps {
   comments: Comment[];
@@ -80,7 +78,7 @@ export default function CommentSection({
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
                       <span className="font-medium">
-                        {comment.user.username}
+                        {comment.liteAuthor.name}
                       </span>
                       <span className="text-base-content/60 text-xs">
                         {comment.date}
