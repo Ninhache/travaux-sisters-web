@@ -11,7 +11,7 @@ export type Thread = {
   replies: number;
   author: { name: string; idPicture: number };
   date: string;
-  categorie: Category[];
+  categorie: Category;
 };
 
 export type Category = {
@@ -65,7 +65,10 @@ export type Comment = {
   id: number;
   contenu: string;
   date: string;
-  user: User;
+  liteAuthor: {
+    name: string;
+    idPicture: string;
+  };
 };
 
 type CreateThreadResponse = Thread & { user: User } & {
@@ -162,6 +165,31 @@ export async function postCommentsOnMessageId({
 
   if (!response.ok) {
     throw new Error("Failed to modify threads");
+  }
+
+  return response.json();
+}
+
+interface DeleteMessageByIdParams extends AuthenticationRequest {
+  messageId: number;
+}
+export async function deleteMessageById({
+  token,
+
+  messageId,
+}: DeleteMessageByIdParams): Promise<Comment> {
+  let url = `${getAPIBaseURL()}/message/${messageId}`;
+
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete threads");
   }
 
   return response.json();

@@ -1,18 +1,26 @@
 "use client";
 
 import ThreadList from "@/components/forum/threads/thread-list";
-import { Thread } from "@/lib/api/forum";
-import { Filter, Search } from "lucide-react";
+import { Category, Thread } from "@/lib/api/forum";
+import { Filter, Plus, Search } from "lucide-react";
 import { useState } from "react";
+import NewThreadModal from "./new-thread-modal";
+import { useSession } from "@/context/session-context";
 
 interface ForumContentProps {
   initialThreads: Thread[];
+  categories: Category[];
 }
 
-export default function ForumContent({ initialThreads }: ForumContentProps) {
+export default function ForumContent({
+  initialThreads,
+  categories,
+}: ForumContentProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  // const [showNewThreadModal, setShowNewThreadModal] = useState(false);
+  const [showNewThreadModal, setShowNewThreadModal] = useState(false);
+
+  const { isConnected } = useSession();
 
   const filteredThreads = initialThreads.filter((thread) => {
     const q = searchQuery.toLowerCase();
@@ -76,25 +84,38 @@ export default function ForumContent({ initialThreads }: ForumContentProps) {
                 </li>
               </ul>
             </div>
-            {/* <button
-              className="btn btn-primary gap-2"
-              onClick={() => setShowNewThreadModal(true)}
-            >
-              <Plus className="h-4 w-4" />
-              New Thread
-            </button> */}
+
+            {isConnected ? (
+              <button
+                className="btn btn-primary gap-2"
+                onClick={() => setShowNewThreadModal(true)}
+              >
+                <Plus className="h-4 w-4" />
+                New Thread
+              </button>
+            ) : (
+              <div
+                className="tooltip tooltip-bottom"
+                data-tip="You need to be connected to access this link"
+              >
+                <button className="btn btn-ghost bg-primary/25 gap-2" disabled>
+                  <Plus className="h-4 w-4" />
+                  New Thread
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <ThreadList initialThreads={sortedThreads} />
 
-      {/* {showNewThreadModal && (
+      {showNewThreadModal && (
         <NewThreadModal
-          category={categories}
+          categories={categories}
           onClose={() => setShowNewThreadModal(false)}
         />
-      )} */}
+      )}
     </div>
   );
 }

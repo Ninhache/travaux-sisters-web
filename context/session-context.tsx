@@ -20,6 +20,7 @@ export type User = {
   adresse: string;
   zipCode: string;
   city: string;
+  imageId: number;
 };
 
 interface SessionState {

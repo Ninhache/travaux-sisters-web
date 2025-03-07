@@ -3,6 +3,7 @@
 import { useSession } from "@/context/session-context";
 import {
   Comment,
+  deleteMessageById,
   getThreads,
   postCommentsOnMessageId,
   Thread,
@@ -11,11 +12,15 @@ import {
   Calendar,
   ChevronDown,
   ChevronUp,
+  Edit2,
   MessageSquare,
+  MoreHorizontal,
   Send,
+  Trash2,
   User,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { MouseEvent, useEffect, useState } from "react";
 
 interface ThreadListProps {
   initialThreads?: Thread[];
@@ -53,20 +58,6 @@ export default function ThreadList({
     try {
       setLoading(true);
       const apiThreads = await getThreads({ categorieId: categoryId });
-
-      // Map API threads to component threads
-      // const mappedThreads = apiThreads.map((thread: Thread) => ({
-      //   id: thread.title.toLowerCase().replace(/\s+/g, "-"),
-      //   title: thread.title,
-      //   text: thread.textResume,
-      //   replies: thread.replies,
-      //   author: thread.author.name,
-      //   date: thread.date,
-      //   category: thread.categorie.libelle,
-      //   subcategory:
-      //     thread.categorie.categorieChildren?.[0]?.libelle ||
-      //     thread.categorie.libelle,
-      // }));
 
       setThreads(apiThreads);
     } catch (error) {
@@ -123,7 +114,7 @@ export default function ThreadList({
 
       const newComment: Comment = {
         id: response.id,
-        user: response.user,
+        liteAuthor: response.liteAuthor,
         contenu: response.contenu,
         date: response.date,
       };
@@ -206,20 +197,96 @@ function ThreadCard({
   onSubmitComment,
   isCommentLoading,
 }: ThreadCardProps) {
+  const { user, token } = useSession();
+
+  const handleEdit = (
+    e: MouseEvent<HTMLAnchorElement>,
+    id: string | number,
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Edit thread:", id);
+  };
+
+  const handleDelete = (e: MouseEvent<HTMLAnchorElement>, id: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!token) return;
+
+    if (confirm("Are you sure you want to delete this thread?")) {
+      console.log("Delete thread:", id);
+      deleteMessageById({ messageId: id, token });
+    }
+  };
   return (
     <div className="card bg-base-100 shadow-sm transition-shadow hover:shadow">
       <div className="card-body p-4 sm:p-6">
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <span className="card-title hover:text-primary text-lg transition-colors sm:text-xl">
-              {thread.title}
-            </span>
-            {/* <div
-              className="badge badge-outline font-bold text-white capitalize"
-              // style={getCategoryGradient(thread.category, thread.subcategory)}
-            >
-              {thread.categorie.map((i) => i.libelle).join(",")}
-            </div> */}
+            <div className="flex items-center gap-2">
+              {/* User Avatar */}
+              <div className="avatar">
+                <div className="ring-primary ring-offset-base-100 h-8 w-8 rounded-full ring ring-offset-2">
+                  <Image
+                    src={`/profile/${thread.author.idPicture}.webp`}
+                    alt="User Avatar"
+                    width={80}
+                    height={80}
+                    className="h-4 w-4 rounded-full"
+                  />
+                </div>
+              </div>
+
+              <span className="card-title hover:text-primary text-lg transition-colors sm:text-xl">
+                {thread.title}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div
+                className="badge badge-outline font-bold text-white capitalize"
+                // style={getCategoryGradient(thread.category, thread.subcategory)}
+              >
+                {thread.categorie.libelle}
+              </div>
+
+              {/* Discrete dropdown menu for edit/delete using DaisyUI */}
+              {thread.author.name === user?.username ? (
+                <>
+                  <div className="dropdown dropdown-end">
+                    <label
+                      tabIndex={0}
+                      className="btn btn-ghost btn-xs btn-circle"
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </label>
+                    <ul
+                      tabIndex={0}
+                      className="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow"
+                    >
+                      <li>
+                        <a onClick={(e) => handleEdit(e, thread.id)}>
+                          <Edit2 className="h-4 w-4" />
+                          Edit
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          onClick={(e) => handleDelete(e, thread.id)}
+                          className="text-error"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </>
+              ) : (
+                <div className="h-6 w-6" />
+              )}
+            </div>
           </div>
 
           <p className="text-base-content/80 mt-2 line-clamp-2">
@@ -262,11 +329,56 @@ function ThreadCard({
             <div className="space-y-3">
               {comments.length > 0 ? (
                 comments.map((comment) => (
-                  <div key={comment.id} className="bg-base-200 rounded-lg p-3">
+                  <div
+                    key={comment.id}
+                    className="bg-base-200 relative rounded-lg p-3"
+                  >
                     <div className="flex items-center justify-between">
-                      <div className="font-medium">{comment.user.username}</div>
-                      <div className="text-base-content/60 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="avatar">
+                          <div className="h-6 w-6 rounded-full">
+                            <Image
+                              src={`/profile/${comment.liteAuthor.idPicture}.webp`}
+                              alt="User Avatar"
+                              width={80}
+                              height={80}
+                              className="h-4 w-4 rounded-full"
+                            />
+                          </div>
+                        </div>
+                        <div className="font-medium">
+                          {comment.liteAuthor.name}
+                        </div>
+                      </div>
+                      <div className="text-base-content/60 flex items-center gap-2 text-xs">
                         {comment.date}
+
+                        <div className="inline-flex">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              console.log("Edit comment:", comment.id);
+                            }}
+                            className="btn btn-ghost btn-xs btn-circle"
+                            data-tip="Edit"
+                          >
+                            <Edit2 className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (confirm("Delete this comment?")) {
+                                console.log("Delete comment:", comment.id);
+                              }
+                            }}
+                            className="btn btn-ghost btn-xs btn-circle text-error"
+                            data-tip="Delete"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                     <p className="mt-1 text-sm">{comment.contenu}</p>

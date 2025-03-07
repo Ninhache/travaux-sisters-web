@@ -1,9 +1,10 @@
 import ForumContent from "@/components/forum/threads/forum-content";
+import { getAPIBaseURL } from "@/config/url";
+import { getCategories } from "@/lib/api/category";
 import { getThreads } from "@/lib/api/forum";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ParamsProps } from "../../devis/[id]/page";
-import { getAPIBaseURL } from "@/config/url";
 
 interface CategoryPageProps {
   categorySlug: string;
@@ -33,6 +34,7 @@ export default async function CategoryPage({
   const { id: categorieId } = category;
 
   const filteredThreads = await getThreads({ categorieId });
+  const categories = await getCategories();
 
   return (
     <Suspense
@@ -40,7 +42,7 @@ export default async function CategoryPage({
         <div className="w-full p-8 text-center">Loading forum content...</div>
       }
     >
-      <ForumContent initialThreads={filteredThreads} />
+      <ForumContent categories={categories} initialThreads={filteredThreads} />
     </Suspense>
   );
 }
