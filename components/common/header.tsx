@@ -59,7 +59,7 @@ const ConnectedRightPart = () => {
               alt="User Avatar"
               width={80}
               height={80}
-              className="rounded-full"
+              className="h-full w-full rounded-full object-cover"
             />
           </div>
           <span className="hidden font-medium md:inline">Mon compte</span>

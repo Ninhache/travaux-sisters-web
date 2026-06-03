@@ -6,6 +6,9 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ParamsProps } from "../../devis/[id]/page";
 
+// Rendu à la requête : dépend de données live du back, pas de prérendu au build.
+export const dynamic = "force-dynamic";
+
 interface CategoryPageProps {
   categorySlug: string;
 }

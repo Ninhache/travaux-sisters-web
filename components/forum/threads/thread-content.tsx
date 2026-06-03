@@ -1,7 +1,7 @@
 "use client";
 
 import { Thread } from "@/lib/api/forum";
-import { getCategoryGradient } from "@/lib/badget-color";
+import { getCategoryStyle } from "@/lib/badget-color";
 import {
   Calendar,
   Flag,
@@ -34,12 +34,10 @@ export default function ThreadContent({ thread }: ThreadContentProps) {
     <div className="bg-base-100 rounded-box mb-6 p-6 shadow-sm">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{thread.title}</h1>
-        {/* <div className="badge badge-outline capitalize">{thread.category}</div> */}
         <div
-          className="badge badge-outline font-bold text-white capitalize"
-          // style={getCategoryGradient(thread., thread.subcategory)}
+          className="badge border-0 font-bold text-white capitalize"
+          style={getCategoryStyle(thread.categorie.slug)}
         >
-          {/* {thread.category} */}
           {thread.categorie.libelle}
         </div>
       </div>

@@ -34,3 +34,37 @@ export async function handleLogin({
     ...data,
   };
 }
+
+export interface RegisterParams {
+  mail: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  token: string;
+}
+
+export async function handleRegister({
+  mail,
+  password,
+}: RegisterParams): Promise<RegisterResponse> {
+  const response = await fetchAPI({
+    endpoint: "/users/register",
+    method: "POST",
+    body: {
+      mail: mail,
+      pwd: password,
+    },
+  });
+
+  if (!response.ok) {
+    // Le back renvoie un 401 avec un message ("Mail déjà utilisé", etc.)
+    const message = await response.text();
+    throw new Error(message || "Inscription impossible");
+  }
+
+  // /users/register renvoie le token en texte brut (ResponseEntity<String>)
+  const token = (await response.text()).trim();
+
+  return { token };
+}

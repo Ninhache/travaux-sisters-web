@@ -10,6 +10,7 @@ import {
   postCommentsOnMessageId,
   Thread,
 } from "@/lib/api/forum";
+import { getCategoryStyle } from "@/lib/badget-color";
 import {
   Calendar,
   ChevronDown,
@@ -227,7 +228,7 @@ function ThreadCard({
                     alt="User Avatar"
                     width={80}
                     height={80}
-                    className="h-4 w-4 rounded-full"
+                    className="h-full w-full rounded-full object-cover"
                   />
                 </div>
               </div>
@@ -239,8 +240,8 @@ function ThreadCard({
 
             <div className="flex items-center gap-2">
               <div
-                className="badge badge-outline font-bold text-white capitalize"
-                // style={getCategoryGradient(thread.category, thread.subcategory)}
+                className="badge border-0 font-bold text-white capitalize"
+                style={getCategoryStyle(thread.categorie.slug)}
               >
                 {thread.categorie.libelle}
               </div>
@@ -330,7 +331,7 @@ function ThreadCard({
                               alt="User Avatar"
                               width={80}
                               height={80}
-                              className="h-4 w-4 rounded-full"
+                              className="h-full w-full rounded-full object-cover"
                             />
                           </div>
                         </div>

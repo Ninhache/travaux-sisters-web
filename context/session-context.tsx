@@ -1,5 +1,5 @@
 "use client";
-import { handleLogin } from "@/lib/api/connection";
+import { handleLogin, handleRegister } from "@/lib/api/connection";
 import { handleProfile } from "@/lib/api/profile";
 import { Maybe } from "@/types/util";
 import {
@@ -31,6 +31,7 @@ interface SessionState {
 interface SessionContextProps extends SessionState {
   setSession: (updates: Partial<SessionState>) => void;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isConnected: boolean;
   loading: boolean;
@@ -115,6 +116,24 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
     }
   }, []);
 
+  const register = useCallback(async (mail: string, password: string) => {
+    setLoading(true);
+    try {
+      // Crée le compte puis ouvre la session avec le token renvoyé.
+      const { token } = await handleRegister({ mail, password });
+      localStorage.setItem("accessToken", token);
+      setSession({ token });
+
+      await fetchProfile(token);
+    } catch (error) {
+      logout();
+      // On relance pour que le formulaire puisse afficher le message d'erreur.
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const logout = () => {
     setSession({ user: null, token: null });
     localStorage.removeItem(LOCAL_STORAGE_KEY);
@@ -149,6 +168,7 @@ const SessionContextProvider: React.FC<ProviderProps> = ({ children }) => {
         ...session,
         setSession,
         login,
+        register,
         logout,
         isConnected,
         loading,
